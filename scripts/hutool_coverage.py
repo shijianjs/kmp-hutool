@@ -79,7 +79,7 @@ def scan_kotlin_sources(source_roots: list[Path]) -> tuple[dict[str, list[str]],
     return dict(tags), files
 
 
-COMMENT_RE = re.compile(r"/*.*?\*/|//[^\n]*", re.S)
+COMMENT_RE = re.compile(r"/\*.*?\*/|//[^\n]*", re.S)
 
 
 def strip_comments(java_source: str) -> str:

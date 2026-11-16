@@ -9,32 +9,32 @@ title: 功能覆盖率
 上游一个 Java 类算一项，Kotlin 源码里带 `@hutool <全限定类名>` 的 KDoc 标签算已完成，
 明确排除的项必须带理由。页面上的数字每次运行脚本都会重算，不手工维护。
 
-**299 / 567**（52.7%）
+**302 / 397**（76.1%）
 
 | 模块 | 总数 | 已完成 | 明确不做 | 待完成 |
 |---|---:|---:|---:|---:|
 | `hutool-ai` | 58 | 0 | 58 | 0 |
 | `hutool-all` | 2 | 0 | 2 | 0 |
 | `hutool-aop` | 15 | 0 | 15 | 0 |
-| `hutool-bloomFilter` | 22 | 0 | 3 | 19 |
-| `hutool-cache` | 22 | 0 | 4 | 18 |
+| `hutool-bloomFilter` | 22 | 0 | 7 | 15 |
+| `hutool-cache` | 22 | 0 | 15 | 7 |
 | `hutool-captcha` | 13 | 0 | 13 | 0 |
-| `hutool-core` | 715 | 283 | 330 | 102 |
-| `hutool-cron` | 41 | 0 | 19 | 22 |
-| `hutool-crypto` | 70 | 4 | 16 | 50 |
+| `hutool-core` | 715 | 286 | 406 | 23 |
+| `hutool-cron` | 41 | 0 | 29 | 12 |
+| `hutool-crypto` | 70 | 4 | 56 | 10 |
 | `hutool-db` | 107 | 0 | 107 | 0 |
-| `hutool-dfa` | 6 | 3 | 1 | 2 |
+| `hutool-dfa` | 6 | 3 | 2 | 1 |
 | `hutool-extra` | 179 | 0 | 179 | 0 |
 | `hutool-http` | 72 | 0 | 72 | 0 |
-| `hutool-json` | 33 | 0 | 5 | 28 |
-| `hutool-jwt` | 17 | 0 | 4 | 13 |
-| `hutool-log` | 46 | 6 | 35 | 5 |
+| `hutool-json` | 33 | 0 | 18 | 15 |
+| `hutool-jwt` | 17 | 0 | 10 | 7 |
+| `hutool-log` | 46 | 6 | 38 | 2 |
 | `hutool-poi` | 78 | 0 | 78 | 0 |
 | `hutool-script` | 5 | 0 | 5 | 0 |
-| `hutool-setting` | 16 | 3 | 4 | 9 |
+| `hutool-setting` | 16 | 3 | 10 | 3 |
 | `hutool-socket` | 24 | 0 | 24 | 0 |
 | `hutool-system` | 16 | 0 | 16 | 0 |
-| **总计** | **1557** | **299** | **990** | **268** |
+| **总计** | **1557** | **302** | **1160** | **95** |
 
 ## 明确不做的模块
 
