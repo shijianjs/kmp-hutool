@@ -10,7 +10,7 @@ import io.github.shijianjs.kmphutool.core.text.StrBuilder
  *
  * @hutool cn.hutool.core.text.replacer.ReplacerChain
  */
-class ReplacerChain(vararg strReplacers: StrReplacer) :
+open class ReplacerChain(vararg strReplacers: StrReplacer) :
     StrReplacer(),
     Chain<StrReplacer, ReplacerChain> {
 
