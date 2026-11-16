@@ -17,13 +17,13 @@ The only published module. Everything below lives in `commonMain`, so it compile
 | `core.util` | `CharUtil`, `StrUtil`, `EscapeUtil`, `ObjectUtil`, `ArrayUtil`, `NumberUtil`, `RandomUtil`, `HexUtil`, `ReUtil`, `IdUtil` (+ `Snowflake`), `HashUtil`, `PageUtil`, `EnumUtil`, `DesensitizedUtil`, `PhoneUtil`, `CreditCodeUtil`, `IdcardUtil`, `ObjUtil` |
 | `core.collection` | `ListUtil`, `IterUtil`, `CollUtil`, `Partition`, `RandomAccessPartition`, `RandomAccessAvgPartition` |
 | `core.map` | `MapUtil`, `CaseInsensitiveMap`, `TableMap`, `MapProxy` |
-| `core.lang` | `Dict`, `Validator`, `Assert`, `Range`, `Holder`, `MutableObj`, `WeightRandom`, `Tuple`, `Opt`, `ConsoleTable`, `Pair` |
+| `core.lang` | `Dict`, `Validator`, `Assert`, `Range`, `Holder`, `MutableObj`, `WeightRandom`, `Tuple`, `Opt`, `ConsoleTable`, `Pair`, `RegexPool`, `PatternPool`, `CityHash` |
 | `core.codec` | `Base64`, `PunyCode`, `Morse`, `Base85` |
 | `core.convert` | `Convert`, `BasicType`, `NumberWordFormatter`, `NumberChineseFormatter`, `NumberWithFormat`, `Converter`, `TypeConverter`, `CastUtil`, `ConvertException` |
 | `core.comparator` | `CompareUtil`, `VersionComparator` |
 | `core.date` | `DateUnit`, `DateField`, `Month`, `Week`, `Quarter`, `Zodiac`, `DatePattern`, `DateBetween`, `StopWatch`, `BetweenFormatter`, `GroupTimeInterval`, `TimeInterval`, `YearQuarter`, `ChineseDate`, `TimeZoneUtil`, `ZoneUtil`, `DateBasic`, plus `date.chinese` |
 | `core.math` | `MathUtil`, `CRC16Checksum`, `DataSize` |
-| `core.crypto` | `Vigenere`, `CipherMode`, `Mode`, `Padding`, `CryptoException`, algorithm name enums (`DigestAlgorithm`, `HmacAlgorithm`, `AsymmetricAlgorithm`, `SignAlgorithm`, `SymmetricAlgorithm`), pure `SM3`, `HOTP`, `TOTP` |
+| `core.crypto` | `Vigenere`, `CipherMode`, `Mode`, `Padding`, `CryptoException`, algorithm name enums (`DigestAlgorithm`, `HmacAlgorithm`, `AsymmetricAlgorithm`, `SignAlgorithm`, `SymmetricAlgorithm`), pure `SM3`, `HOTP`, `TOTP`, `SignUtil` |
 | `core.bloomfilter` | `BloomFilter`, `BitMapBloomFilter`, `BloomFilterUtil`, bit maps and the ten hash filters |
 | `core.io` | `FastByteBuffer`, `FastStringWriter`, `FastByteArrayOutputStream`, `NullOutputStream`, `StreamProgress`, `LineHandler`, `IORuntimeException` |
 | `core.setting` | `GroupedMap`, `GroupedSet`, `SettingRuntimeException` |
@@ -235,3 +235,9 @@ Reflection-based helpers (`BeanUtil`, `ClassUtil`, `Getter`, annotation scanning
 I/O, thread and timer utilities, AWT/Swing image helpers, `javax.tools`, `BigDecimal`, and
 `java.util.stream` have no equivalent in common code. They are recorded as excluded with a reason in
 `scripts/hutool-exclusions.json` instead of being silently dropped.
+
+### Parameter signing and CityHash
+
+`SignUtil.signParamsMd5`, `signParamsSha1` and `signParamsSha256` sort the map by key string, join
+entries as `key=value` plus any trailing secret, then hash. `CityHash.hash32/hash64/hash128` are pure
+Kotlin and match the upstream Java output for every length bucket (0-16, 17-32, 33-64, 65+).

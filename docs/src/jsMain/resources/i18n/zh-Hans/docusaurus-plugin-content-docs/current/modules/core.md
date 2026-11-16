@@ -16,13 +16,13 @@ title: core
 | `core.util` | `CharUtil`、`StrUtil`、`EscapeUtil`、`ObjectUtil`、`ArrayUtil`、`NumberUtil`、`RandomUtil`、`HexUtil`、`HashUtil`、`ReUtil`、`IdUtil`（含 `Snowflake`）、`PageUtil`、`EnumUtil`、`DesensitizedUtil`、`PhoneUtil`、`CreditCodeUtil`、`IdcardUtil`、`ObjUtil` |
 | `core.collection` | `ListUtil`、`IterUtil`、`CollUtil`、`Partition`、`RandomAccessPartition`、`RandomAccessAvgPartition` |
 | `core.map` | `MapUtil`、`CaseInsensitiveMap`、`TableMap`、`MapProxy` |
-| `core.lang` | `Dict`、`Validator`、`Assert`、`Range`、`Holder`、`MutableObj`、`WeightRandom`、`Tuple`、`Opt`、`ConsoleTable`、`Pair` |
+| `core.lang` | `Dict`、`Validator`、`Assert`、`Range`、`Holder`、`MutableObj`、`WeightRandom`、`Tuple`、`Opt`、`ConsoleTable`、`Pair`、`RegexPool`、`PatternPool`、`CityHash` |
 | `core.codec` | `Base64`、`PunyCode`、`Morse`、`Base85` |
 | `core.convert` | `Convert`、`BasicType`、`NumberWordFormatter`、`NumberChineseFormatter`、`NumberWithFormat`、`Converter`、`TypeConverter`、`CastUtil`、`ConvertException` |
 | `core.comparator` | `CompareUtil`、`VersionComparator` |
 | `core.date` | `DateUnit`、`DateField`、`Month`、`Week`、`Quarter`、`Zodiac`、`DatePattern`、`DateBetween`、`StopWatch`、`BetweenFormatter`、`GroupTimeInterval`、`TimeInterval`、`YearQuarter`、`ChineseDate`、`TimeZoneUtil`、`ZoneUtil`、`DateBasic`，以及 `date.chinese` |
 | `core.math` | `MathUtil`、`CRC16Checksum`、`DataSize` |
-| `core.crypto` | `Vigenere`、`CipherMode`、`Mode`、`Padding`、`CryptoException`、算法名枚举（`DigestAlgorithm`、`HmacAlgorithm`、`AsymmetricAlgorithm`、`SignAlgorithm`、`SymmetricAlgorithm`），以及纯 Kotlin 的 `SM3`、`HOTP`、`TOTP` |
+| `core.crypto` | `Vigenere`、`CipherMode`、`Mode`、`Padding`、`CryptoException`、算法名枚举（`DigestAlgorithm`、`HmacAlgorithm`、`AsymmetricAlgorithm`、`SignAlgorithm`、`SymmetricAlgorithm`），以及纯 Kotlin 的 `SM3`、`HOTP`、`TOTP`、`SignUtil` |
 | `core.bloomfilter` | `BloomFilter`、`BitMapBloomFilter`、`BloomFilterUtil`、位图与十个哈希过滤器 |
 | `core.io` | `FastByteBuffer`、`FastStringWriter`、`FastByteArrayOutputStream`、`NullOutputStream`、`StreamProgress`、`LineHandler`、`IORuntimeException` |
 | `core.setting` | `GroupedMap`、`GroupedSet`、`SettingRuntimeException` |
@@ -217,3 +217,9 @@ val custom = SDBMFilter(1_000)         // 单独使用 SDBM 哈希过滤器
 ## 不可移植
 
 反射类工具（`BeanUtil`、`ClassUtil`、`Getter`、注解扫描）、`java.io`/`java.nio` I/O、线程与定时器、AWT/Swing 图片、`javax.tools`、`BigDecimal`、`java.util.stream` 在 common 代码里没有对应实现。它们被记录在 `scripts/hutool-exclusions.json` 并附具体理由，而不是悄悄消失。
+
+### 参数签名与 CityHash
+
+`SignUtil.signParamsMd5`、`signParamsSha1`、`signParamsSha256` 会按 key 字符串排序，以 `key=value`
+拼接并追加末尾密钥，再做摘要。`CityHash.hash32/hash64/hash128` 为纯 Kotlin 实现，各长度区间
+（0-16、17-32、33-64、65+）的输出均与上游 Java 一致。

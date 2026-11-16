@@ -79,6 +79,10 @@
     "cn.hutool.core.util.SystemPropsUtil": "Reads java.lang.System properties and environment through JVM system calls.",
     "cn.hutool.cache.impl.WeakCache": "Stores values through java.lang.ref.WeakReference; common Kotlin has no weak-reference API.",
     "cn.hutool.log.Log": "Hutool's logging facade resolves callers and pluggable JVM backends; KMP projects use kotlin-logging instead, so this facade is intentionally out of scope.",
-    "cn.hutool.log.StaticLog": "Depends on CallerUtil and the JVM LogFactory; replaced by kotlin-logging's KLogger."
+    "cn.hutool.log.StaticLog": "Depends on CallerUtil and the JVM LogFactory; replaced by kotlin-logging's KLogger.",
+    "cn.hutool.crypto.digest.Argon2": "Argon2 is a password-hashing KDF built on BouncyCastle's Argon2BytesGenerator/Argon2Parameters; neither exists in commonMain, and a pure-Kotlin Argon2 is a separate crypto backend rather than a port of this wrapper.",
+    "cn.hutool.setting.dialect.PropsUtil": "PropsUtil is only a cache/factory in front of Props, which reads .properties files with java.io; Props is excluded, so the factory has no implementation to return.",
+    "cn.hutool.setting.profile.GlobalProfile": "GlobalProfile caches a Profile and Setting, both excluded because they read files and resolve active profiles through java.io.",
+    "cn.hutool.setting.SettingUtil": "SettingUtil caches Setting instances loaded from files; Setting and SettingLoader are excluded for java.io, leaving no KMP implementation to wrap."
   }
 }
