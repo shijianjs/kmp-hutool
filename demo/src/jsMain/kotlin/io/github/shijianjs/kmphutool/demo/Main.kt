@@ -19,6 +19,12 @@ import io.github.shijianjs.kmphutool.core.convert.NumberChineseFormatter
 import io.github.shijianjs.kmphutool.core.date.BetweenFormatter
 import io.github.shijianjs.kmphutool.core.date.ChineseDate
 import io.github.shijianjs.kmphutool.core.date.DateUnit
+import io.github.shijianjs.kmphutool.core.crypto.SignUtil
+import io.github.shijianjs.kmphutool.core.crypto.digest.SM3
+import io.github.shijianjs.kmphutool.core.crypto.digest.otp.HOTP
+import io.github.shijianjs.kmphutool.core.json.JSONObject
+import io.github.shijianjs.kmphutool.core.lang.RegexPool
+import io.github.shijianjs.kmphutool.core.lang.hash.CityHash
 import kotlinx.browser.document
 import org.w3c.dom.HTMLElement
 
@@ -49,6 +55,8 @@ private fun render() {
     root.appendChild(chinaSection())
     root.appendChild(dateSection())
     root.appendChild(bloomSection())
+    root.appendChild(cryptoSection())
+    root.appendChild(structuredSection())
     root.appendChild(footer())
 }
 
@@ -155,6 +163,27 @@ private fun bloomSection(): HTMLElement {
         "BloomFilter.add (again)" to secondAdd.toString(),
     )
     return section(label("Bloom filter", "布隆过滤器"), rows)
+}
+
+private fun cryptoSection(): HTMLElement {
+    val rows = listOf(
+        "SM3.digestHex" to SM3().digestHex("abc").take(16) + "...",
+        "HOTP.generate(1)" to HOTP(key = "12345678901234567890".encodeToByteArray()).generate(1).toString(),
+        "SignUtil.signParamsMd5" to SignUtil.signParamsMd5(mapOf("b" to 2, "a" to 1), "key").take(16) + "...",
+        "RegexPool.MOBILE" to Regex(RegexPool.MOBILE).matches("13812345678").toString(),
+    )
+    return section(label("Hashes, OTP, signing", "摘要、一次性密码、签名"), rows)
+}
+
+private fun structuredSection(): HTMLElement {
+    val json = JSONObject()
+        .put("name", "kmp-hutool")
+        .put("portable", true)
+    val rows = listOf(
+        "JSONObject.toJSONString" to json.toJSONString(),
+        "CityHash.hash64" to CityHash.hash64("kmp-hutool".encodeToByteArray()).toString(),
+    )
+    return section(label("JSON and CityHash", "JSON 与 CityHash"), rows)
 }
 
 private fun label(english: String, chinese: String): String = if (locale == Locale.ZH) chinese else english
