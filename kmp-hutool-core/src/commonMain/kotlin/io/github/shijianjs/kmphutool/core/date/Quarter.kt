@@ -35,6 +35,9 @@ enum class Quarter(private val value: Int) {
         return entries[(ordinal + amount) % 4]
     }
 
+    /** Pairs this quarter with [year]. */
+    fun atYear(year: Int): YearQuarter = YearQuarter.of(year, this)
+
     companion object {
         /** Maps `1..4`, or `null`. */
         fun of(intValue: Int): Quarter? = when (intValue) {

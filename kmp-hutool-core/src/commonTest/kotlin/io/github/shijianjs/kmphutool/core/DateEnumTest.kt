@@ -5,6 +5,7 @@ import io.github.shijianjs.kmphutool.core.date.DateUnit
 import io.github.shijianjs.kmphutool.core.date.Month
 import io.github.shijianjs.kmphutool.core.date.Quarter
 import io.github.shijianjs.kmphutool.core.date.Week
+import io.github.shijianjs.kmphutool.core.date.YearQuarter
 import io.github.shijianjs.kmphutool.core.date.Zodiac
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -51,5 +52,17 @@ class DateEnumTest {
         assertEquals("鼠", Zodiac.getChineseZodiac(1900))
         assertEquals(null, Zodiac.getChineseZodiac(1899))
         assertTrue(Zodiac.getZodiac(kotlinx.datetime.LocalDate(2020, 8, 1)).endsWith("座"))
+    }
+
+    @Test
+    fun yearQuartersNavigate() {
+        val q = Quarter.Q3.atYear(2024)
+        assertEquals("2024 Q3", q.toString())
+        assertEquals(2024, q.nextQuarter().year)
+        assertEquals(Quarter.Q4, q.nextQuarter().quarter)
+        assertEquals(2025, q.plusYears(1).year)
+        assertEquals(kotlinx.datetime.LocalDate(2024, 7, 1), q.firstDate)
+        assertEquals(kotlinx.datetime.LocalDate(2024, 9, 30), q.lastDate)
+        assertTrue(YearQuarter.of(2024, 4).isAfter(q))
     }
 }
