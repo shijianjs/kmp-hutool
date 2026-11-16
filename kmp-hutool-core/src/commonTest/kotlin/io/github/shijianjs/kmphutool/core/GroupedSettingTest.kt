@@ -22,6 +22,12 @@ class GroupedSettingTest {
 
 
     @Test
+    fun settingExceptionFormatsTemplate() {
+        val error = io.github.shijianjs.kmphutool.core.setting.SettingRuntimeException("bad {}", "file")
+        assertEquals("bad file", error.message)
+    }
+
+    @Test
     fun groupedSetParsesSections() {
         val set = GroupedSet()
         set.load("[g1]\naaa\n\\#bbb\n# comment\n[g2]\nccc\n[g1]\nddd")
