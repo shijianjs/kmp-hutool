@@ -134,7 +134,7 @@ class Dict(
         }
 
         /** A dict from the given pairs. */
-        fun ofPairs(vararg pairs: Pair<String, Any?>): Dict {
+        fun ofPairs(vararg pairs: kotlin.Pair<String, Any?>): Dict {
             val dict = Dict()
             for ((key, value) in pairs) dict[key] = value
             return dict
