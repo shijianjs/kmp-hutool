@@ -2,6 +2,7 @@ package io.github.shijianjs.kmphutool.core.util
 
 import kotlin.random.Random
 import kotlin.time.Clock
+import io.github.shijianjs.kmphutool.core.lang.Snowflake
 import kotlin.time.ExperimentalTime
 
 /**
@@ -46,10 +47,10 @@ object IdUtil {
     }
 
     /** A snowflake id generator with the given worker and datacenter ids. */
-    fun createSnowflake(workerId: Long, datacenterId: Long): Snowflake = Snowflake(workerId, datacenterId)
+    fun createSnowflake(workerId: Long, datacenterId: Long): Snowflake = Snowflake(workerId = workerId, dataCenterId = datacenterId)
 
     /** A shared snowflake generator; the first call initialises it from the current clock. */
-    fun getSnowflake(workerId: Long, datacenterId: Long): Snowflake = sharedSnowflake(workerId, datacenterId)
+    fun getSnowflake(workerId: Long, datacenterId: Long): Snowflake = sharedSnowflake(workerId = workerId, datacenterId = datacenterId)
 
     /** A shared snowflake generator with a derived datacenter id. */
     fun getSnowflake(workerId: Long): Snowflake = sharedSnowflake(workerId, getDataCenterId(MAX_DATACENTER_ID))
@@ -102,9 +103,9 @@ object IdUtil {
         val existing = snowflake
         if (existing != null && (workerId == null || existing.workerId == workerId)) return existing
         val created = if (workerId == null || datacenterId == null) {
-            Snowflake.createAuto()
+            Snowflake.auto()
         } else {
-            Snowflake(workerId, datacenterId)
+            Snowflake(workerId = workerId, dataCenterId = datacenterId)
         }
         snowflake = created
         return created
@@ -153,73 +154,3 @@ object IdUtil {
     private fun nowSeconds(): Long = nowMillis() / 1000
 }
 
-/**
- * A Twitter-style snowflake generator: 41 bits of timestamp, 5 bits of datacenter id, 5 bits of
- * worker id and 12 bits of sequence.
- *
- * Port of `cn.hutool.core.util.IdUtil`'s inner `Snowflake` class. The clock is read through
- * `kotlin.time.Clock`, and waiting for the next millisecond is a busy loop bounded by the sequence
- * width — the same behaviour as upstream.
- */
-class Snowflake(val workerId: Long, val datacenterId: Long) {
-    private var sequence = 0L
-    private var lastTimestamp = -1L
-
-    init {
-        require(workerId in 0..MAX_WORKER_ID) { "workerId must be in 0..$MAX_WORKER_ID" }
-        require(datacenterId in 0..MAX_DATACENTER_ID) { "datacenterId must be in 0..$MAX_DATACENTER_ID" }
-    }
-
-    /** The next id; blocks (busy-waits) when more than 4096 ids are requested in one millisecond. */
-    fun nextId(): Long {
-        var timestamp = currentMillis()
-        if (timestamp < lastTimestamp) {
-            // The clock moved backwards; wait it out instead of emitting an out-of-order id.
-            timestamp = waitUntil(lastTimestamp)
-        }
-        if (timestamp == lastTimestamp) {
-            sequence = (sequence + 1) and SEQUENCE_MASK
-            if (sequence == 0L) timestamp = waitUntil(lastTimestamp + 1)
-        } else {
-            sequence = 0L
-        }
-        lastTimestamp = timestamp
-        return ((timestamp - START_EPOCH) shl TIMESTAMP_SHIFT) or
-            (datacenterId shl DATACENTER_SHIFT) or
-            (workerId shl WORKER_SHIFT) or
-            sequence
-    }
-
-    /** The timestamp encoded in [id]. */
-    fun timestamp(id: Long): Long = (id shr TIMESTAMP_SHIFT) + START_EPOCH
-
-    private fun waitUntil(minTimestamp: Long): Long {
-        var timestamp = currentMillis()
-        while (timestamp < minTimestamp) timestamp = currentMillis()
-        return timestamp
-    }
-
-    private fun currentMillis(): Long = IdUtil.currentTimeMillisForSnowflake()
-
-    companion object {
-        private const val TIMESTAMP_SHIFT = 22
-        private const val DATACENTER_SHIFT = 17
-        private const val WORKER_SHIFT = 12
-        private const val SEQUENCE_MASK = 0xFFFL
-        private const val MAX_WORKER_ID = 31L
-        private const val MAX_DATACENTER_ID = 31L
-
-        /** 2010-11-04T09:42:54.657Z, the epoch Hutool's snowflake uses. */
-        internal const val START_EPOCH = 1288834974657L
-
-        /** Creates a generator with worker and datacenter ids derived from the clock. */
-        fun createAuto(): Snowflake {
-            val datacenterId = IdUtil.getDataCenterId(MAX_DATACENTER_ID)
-            val workerId = IdUtil.getWorkerId(datacenterId, MAX_WORKER_ID)
-            return Snowflake(workerId, datacenterId)
-        }
-    }
-}
-
-@OptIn(ExperimentalTime::class)
-internal fun IdUtil.currentTimeMillisForSnowflake(): Long = Clock.System.now().toEpochMilliseconds()
