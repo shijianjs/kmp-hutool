@@ -9,7 +9,7 @@ package io.github.shijianjs.kmphutool.core.collection
  *
  * @hutool cn.hutool.core.collection.AvgPartition
  */
-class AvgPartition<T>(private val list: List<T>, private val limit: Int) {
+open class AvgPartition<T>(private val list: List<T>, private val limit: Int) {
     private val size: Int = list.size / (if (limit <= 0) 1 else limit)
     private val remainder: Int = if (limit <= 0) 0 else list.size % limit
 
