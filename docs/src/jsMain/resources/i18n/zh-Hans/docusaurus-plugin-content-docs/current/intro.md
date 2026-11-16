@@ -3,36 +3,27 @@ sidebar_position: 1
 title: 简介
 ---
 
-# 简介
+# kmp-hutool
 
-`ktjs-wrapper-template` 是 Kotlin/JS wrapper 的起点，目标通常是 Web Component 生态的 npm 包。它刻意
-**不是**填占位符的脚手架：这个仓库本身就是一个完整项目——能构建、能在真实浏览器里跑测试、有自己的文档站、
-能部署到 GitHub Pages——所以复制一份就能在第一次 `./gradlew build` 跑起来。
+`kmp-hutool` 是 [Hutool](https://github.com/chinabugotech/hutool) 工具库的 Kotlin Multiplatform 改写版。目标是 JVM、JavaScript 与 WebAssembly 共用同一份 `commonMain` 源码，使字符串、集合、数字、日期、编码这些工具在服务端、Node.js 和浏览器里行为一致。
 
-## 里面有什么
+这不是逐行照搬：只依赖 Java 的能力（反射、`java.io`、线程、AWT、`BigDecimal`、stream）不移植；Kotlin 有更自然写法的地方直接改用 Kotlin 写法——合并门面类、用 `kotlinx-datetime` 取代 `java.util.Date`、用显式 `toXxx` 取代反射类型注册表。每个取舍都写在[设计](guide/design.md)里。
+
+## 组成
 
 | 部分 | 作用 |
 | --- | --- |
-| `ktjs-wrapper-template-core` | 示例模块：`@vaadin/button` 25.3.5。一个 npm 包、一个 Gradle 模块、一个 Kotlin 包；加下一个包时照它复制 |
-| `demo` | 用 wrapper 造两个 `<vaadin-button>` 的页面，发布在 `/demo/` |
-| `docs` | 本站：Kotlin 配置 + Markdown 页面，由 [ktjs-docusaurus](https://github.com/shijianjs/ktjs-docusaurus) 的 Gradle 插件构建 |
-| 其余 | 版本清单集中在一个 `package.json`、每模块独立的 `-kt.N` 修订号、Detekt、Playwright 浏览器测试、经 hub 发布到 Maven Central、Pages 工作流 |
+| `kmp-hutool-core` | 库本体：`commonMain` 里可移植的 Hutool 核心类，JVM 与 JS 都有测试 |
+| [演示](https://shijianjs.github.io/kmp-hutool/demo/) | 浏览器里直接调用本库的页面，中英文可切换 |
+| [API](https://shijianjs.github.io/kmp-hutool/api/) | Dokka 生成的公开声明文档 |
+| [覆盖率](guide/coverage.md) | 按类盘点的清单、已完成数量，以及每个排除项的理由 |
 
-`/api/` 下是发布模块的 Dokka 产物——和 `pagesSite` 组装本站时用的是同一次 Dokka。
+## 现状
+
+版本 `5.8.48-kt.1`，对应上游 Hutool `5.8.48`。覆盖率以上游仓库 1557 个类为基数，[覆盖率页面](guide/coverage.md)由 `scripts/hutool_coverage.py` 每次运行时重新生成，数字不靠手工维护。
 
 ## 接下来
 
-- [快速开始](guide/getting-started.md)：构建、测试、开发服务器。
-- [派生新项目](guide/deriving-a-project.md)：改名的清单。
-
-## 各部分如何协作
-
-```mermaid
-flowchart TB
-  T["ktjs-wrapper-template<br/>（复制我）"] --> C["core：示例 wrapper"]
-  T --> D["demo：可运行的页面"]
-  T --> G["docs：本站"]
-  C --> V["@vaadin/button"]
-  G --> B["ktjs-docusaurus<br/>Gradle 插件"]
-  B --> P["GitHub Pages"]
-```
+- [快速开始](guide/getting-started.md)——加依赖、跑第一个例子。
+- [设计](guide/design.md)——移植了什么、改写在哪里、放弃了什么。
+- [许可证](guide/licensing.md)——本项目 MIT，上游代码 Mulan PSL v2。

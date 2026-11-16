@@ -1,7 +1,10 @@
 name: Deploy the documentation site
 
 on:
-  # Deploying is a manual decision now: run this after the commits worth publishing are on main.
+  # Every push to main redeploys the site, so docs, demo and API reference stay in step with the
+  # code. It can also be run by hand from the Actions tab or with `gh workflow run pages.yml`.
+  push:
+    branches: [main]
   workflow_dispatch:
 
 concurrency:
@@ -19,16 +22,16 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v4
 
       - name: Set up JDK
-        uses: actions/setup-java@v6
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: "21"
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v6
+        uses: gradle/actions/setup-gradle@v4
 
       # pagesSite assembles build/pages: the documentation at the root, the demo under /demo/ and
       # Dokka output under /api/.
@@ -36,10 +39,10 @@ jobs:
         run: ./gradlew pagesSite
 
       - name: Configure Pages
-        uses: actions/configure-pages@v6
+        uses: actions/configure-pages@v5
 
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v5
+        uses: actions/upload-pages-artifact@v3
         with:
           path: build/pages
 
@@ -53,4 +56,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v5
+        uses: actions/deploy-pages@v4

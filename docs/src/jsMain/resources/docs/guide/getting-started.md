@@ -1,59 +1,77 @@
 ---
 sidebar_position: 1
+title: Getting started
 ---
 
 # Getting started
 
 ## Requirements
 
-- JDK 21 or newer; the Gradle wrapper is checked in (9.4.1).
-- Node and npm are downloaded and driven by the Kotlin Gradle plugin — there is no `npm install` step
-  to remember, and `kotlin.js.yarn=false` keeps npm as the package manager.
-- Chromium is downloaded by Playwright the first time a browser test runs.
+- Kotlin 2.2 or newer for the consuming project (the library is authored with Kotlin 2.4.21).
+- One of the published targets: `jvm`, `js` (IR), `wasmJs`.
+- Tests are written with `kotlin("test")`, so the same suite runs on every target.
 
-## Build, test, publish
+## Add the dependency
 
-```bash
-./gradlew build                    # compile, Detekt, browser tests
-./gradlew :ktjs-wrapper-template-core:jsBrowserTest
-./gradlew :demo:e2eTest            # Playwright against the bundled demo page
-./gradlew :docs:docusaurusBuild    # the documentation site
-./gradlew pagesSite                # documentation at /, demo at /demo/, Dokka at /api/
+```kotlin
+kotlin {
+    jvm()
+    js { nodejs() }
+    wasmJs { nodejs() }
+    sourceSets {
+        commonMain.dependencies {
+            implementation("io.github.shijianjs:kmp-hutool-core:5.8.48-kt.1")
+        }
+    }
+}
 ```
 
-`build` does not run the demo's end-to-end suite or assemble the Pages site: both need a browser and
-are part of CI as separate steps.
+The version constant lives in `gradle.properties` as `kmp-hutool.version`. A `-kt.N` suffix marks the
+N-th Kotlin rewrite of upstream `5.8.48`; a new upstream version starts a new `5.8.x-kt.1`.
 
-## Develop
+## First calls
 
-```bash
-./gradlew :docs:docusaurusStart    # dev server for this site
-./gradlew :demo:jsBrowserRun       # dev server for the demo page
+Everything lives under `io.github.shijianjs.kmphutool`, mirroring Hutool's package layout
+(`core.util`, `core.text`, `core.collection`, `core.codec`, ...):
+
+```kotlin
+import io.github.shijianjs.kmphutool.core.util.StrUtil
+import io.github.shijianjs.kmphutool.core.util.NumberUtil
+import io.github.shijianjs.kmphutool.core.collection.CollUtil
+
+fun main() {
+    println(StrUtil.format("{} has {} items", "cart", 3))
+    println(StrUtil.upperFirst("kotlin"))        // Kotlin
+    println(NumberUtil.format(1_234_567.891, 2)) // 1,234,567.89
+    println(CollUtil.join(listOf(1, 2, 3), "-")) // 1-2-3
+}
 ```
 
-Docusaurus watches the site directory, so Markdown edits reload; Kotlin changes need
-`./gradlew :docs:docusaurusSite` first, because the site imports the compiled module.
+Where a Kotlin idiom reads better than a static helper, the port offers it as well:
 
-## Where things live
-
-| Path | Contents |
-| --- | --- |
-| `package.json` | the only place npm versions are declared (Dependabot maintains it) |
-| `wrapper-revisions.properties` | per-module `-kt.N` revision |
-| `ktjs-wrapper-template-core/src/jsMain/kotlin` | the wrapper declarations |
-| `ktjs-wrapper-template-core/src/jsTest/kotlin` | browser tests for them |
-| `demo/src/jsMain` | the demo page and its Kotlin entry point |
-| `docs/src/jsMain/kotlin` | the site configuration and sidebar |
-| `docs/src/jsMain/resources` | Markdown pages, MDX landing page, CSS, translations |
-
-## The lock file
-
-npm dependencies are resolved once for the whole workspace and pinned in
-`kotlin-js-store/package-lock.json`. After adding or upgrading an npm dependency — or changing a
-module's version — regenerate it:
-
-```bash
-./gradlew kotlinUpgradePackageLock
+```kotlin
+val parts = "a, b ,c".splitTrim(",")
+val name = "  kotlin  ".trimIndentSafe() // see StrUtil
+val code = "42".toIntOrNull() ?: 0
 ```
 
-CI verifies the committed file, so a forgotten regeneration fails the build rather than drifting.
+## Optional dependencies
+
+`kmp-hutool-core` depends only on `kotlinx-datetime`, and only for date types. Everything outside the
+core (JSON, HTTP, crypto, database, POI, ...) is **not** bundled. When a feature needs a package from
+the kotlinx family or another Kotlin Multiplatform library, you add that package yourself; nothing in
+`commonMain` pulls it in transitively. The [module page](../modules/core.md) lists what each area
+needs when an optional dependency becomes necessary.
+
+## Build from source
+
+```bash
+./gradlew :kmp-hutool-core:jvmTest   # unit tests on the JVM
+./gradlew :kmp-hutool-core:jsTest    # the same tests on Node.js
+./gradlew :docs:docusaurusBuild      # this documentation site
+./gradlew pagesSite                  # docs + demo + API, the layout GitHub Pages serves
+```
+
+Mirror configuration for a slow network belongs in **your own** `~/.gradle/init.d/*.gradle.kts` and
+`~/.npmrc`; the repository's build files must keep pointing at the public registries so CI stays
+reproducible. [Design](design.md) explains the layout in more detail.

@@ -13,7 +13,6 @@ updates:
       # Playwright Java 必须与 Kotlin Gradle Plugin 内置的 npm playwright 版本一致，否则 e2e 套件
       # 找不到 kotlinInstallPlaywrightBrowsers 安装的浏览器。KGP 2.4.21 内置 1.61.0，等它升到
       # 带 1.64 的版本后再放开。
-      - dependency-name: "com.microsoft.playwright:playwright"
     groups:
       kotlin:
         patterns:
@@ -31,10 +30,12 @@ updates:
     labels:
       - dependencies
     groups:
-      # One PR per upstream ecosystem. Add a pattern per scope/package family as modules grow.
-      upstream:
+      # One PR for the npm tools the Kotlin/JS and Docusaurus builds share. The @docusaurus/* runtime
+      # dependencies arrive through the ktjs-docusaurus klib and are not listed here.
+      js-tooling:
         patterns:
-          - "@vaadin/button"
+          - "webpack"
+          - "source-map-loader"
 
   - package-ecosystem: github-actions
     directory: "/"

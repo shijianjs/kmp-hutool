@@ -1,0 +1,4 @@
+# Text files use LF everywhere, so a Windows checkout and the CI checkout produce the same bytes.
+* text=auto eol=lf
+*.bat text eol=crlf
+*.cmd text eol=crlf

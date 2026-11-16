@@ -1,8 +1,8 @@
 pluginManagement {
     repositories {
-        // The docs site is built with the ktjs-docusaurus Gradle plugin. Released versions come from
-        // Central; `mavenLocal` is what serves a SNAPSHOT one, which is how the site is developed
-        // against an unreleased wrapper. An empty local repository falls through to the next
+        // The documentation site is built with the ktjs-docusaurus Gradle plugin: released versions
+        // come from Central, `mavenLocal` is what serves a SNAPSHOT one while the site is developed
+        // against an unreleased plugin. An empty local repository falls through to the next
         // repository, so the order costs nothing in CI.
         mavenLocal()
         gradlePluginPortal()
@@ -22,28 +22,25 @@ pluginManagement {
 
 dependencyResolutionManagement {
     repositories {
-        // Same reasoning as above: the wrapper klib of a SNAPSHOT version comes from `mavenLocal`.
         mavenLocal()
-        // Maven Central is the source of truth for kotlin-wrappers: the Aliyun mirror lags behind
-        // and sometimes serves metadata without the corresponding klibs. Gradle does not fall back
-        // to the next repository once metadata is found, so pin these modules to Central even when
-        // a local mirror is active.
+        // Gradle does not fall back to the next repository once metadata is found, so pin the
+        // Kotlin libraries to Central: a local mirror may serve metadata without the klibs.
         exclusiveContent {
             forRepository { mavenCentral() }
             filter {
                 includeGroup("org.jetbrains.kotlin-wrappers")
-                includeModule("org.jetbrains.kotlin", "kotlin-js-plain-objects")
+                includeGroup("org.jetbrains.kotlinx")
             }
         }
         mavenCentral()
     }
 }
 
-rootProject.name = "ktjs-wrapper-template"
+rootProject.name = "kmp-hutool"
 
-// One Gradle project per published wrapper module. The sample module wraps a single npm package;
-// a derived project adds one include per package (or per group of packages that release together).
-include(":ktjs-wrapper-template-core")
+// Every module keeps Hutool's own module boundaries, so a consumer can depend on the part it needs:
+// the core utilities are one artifact, the optional packages (json, crypto, ...) are separate ones.
+include(":kmp-hutool-core")
 
 // The demo page, published under /demo/ of the Pages site. Not a published module.
 include(":demo")

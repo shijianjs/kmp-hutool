@@ -12,7 +12,7 @@
     "description": "The label of footer link with label=GitHub"
   },
   "copyright": {
-    "message": "用 Kotlin/JS 项目配置构建的 Docusaurus 站点。",
+    "message": "本项目 MIT 许可；上游 Hutool 为 Mulan PSL v2，衍生部分保持该许可。",
     "description": "The footer copyright"
   }
 }

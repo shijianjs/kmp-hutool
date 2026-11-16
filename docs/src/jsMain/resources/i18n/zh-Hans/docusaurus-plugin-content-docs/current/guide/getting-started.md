@@ -1,57 +1,68 @@
 ---
 sidebar_position: 1
+title: 快速开始
 ---
 
 # 快速开始
 
 ## 环境要求
 
-- JDK 21 或更高；Gradle wrapper 已入库（9.4.1）。
-- Node 与 npm 由 Kotlin Gradle 插件下载并驱动——没有需要手动执行的 `npm install`，`kotlin.js.yarn=false`
-  保证包管理器是 npm。
-- 第一次跑浏览器测试时会下载 Chromium（Playwright）。
+- 使用方项目的 Kotlin 版本 2.2 以上（本库用 Kotlin 2.4.21 开发）。
+- 已发布的目标平台：`jvm`、`js`（IR）、`wasmJs`。
+- 测试用 `kotlin("test")`，同一套用例在各目标上都能跑。
 
-## 构建、测试、发布
+## 加依赖
 
-```bash
-./gradlew build                    # 编译、Detekt、浏览器测试
-./gradlew :ktjs-wrapper-template-core:jsBrowserTest
-./gradlew :demo:e2eTest            # 用 Playwright 打打包后的 demo 页面
-./gradlew :docs:docusaurusBuild    # 文档站
-./gradlew pagesSite                # 根目录是文档，demo 在 /demo/，Dokka 在 /api/
+```kotlin
+kotlin {
+    jvm()
+    js { nodejs() }
+    wasmJs { nodejs() }
+    sourceSets {
+        commonMain.dependencies {
+            implementation("io.github.shijianjs:kmp-hutool-core:5.8.48-kt.1")
+        }
+    }
+}
 ```
 
-`build` 不含 demo 的端到端套件，也不组装 Pages 站点：两者都要浏览器，在 CI 里是单独的步骤。
+版本号写在 `gradle.properties` 的 `kmp-hutool.version`。`-kt.N` 后缀表示对上游 `5.8.48` 的第 N 次 Kotlin 改写；上游换版本时重新从 `5.8.x-kt.1` 开始。
 
-## 开发
+## 第一个例子
 
-```bash
-./gradlew :docs:docusaurusStart    # 文档站的开发服务器
-./gradlew :demo:jsBrowserRun       # demo 页面的开发服务器
+包结构镜像 Hutool（`core.util`、`core.text`、`core.collection`、`core.codec`……），根包是 `io.github.shijianjs.kmphutool`：
+
+```kotlin
+import io.github.shijianjs.kmphutool.core.util.StrUtil
+import io.github.shijianjs.kmphutool.core.util.NumberUtil
+import io.github.shijianjs.kmphutool.core.collection.CollUtil
+
+fun main() {
+    println(StrUtil.format("{} has {} items", "cart", 3))
+    println(StrUtil.upperFirst("kotlin"))        // Kotlin
+    println(NumberUtil.format(1_234_567.891, 2)) // 1,234,567.89
+    println(CollUtil.join(listOf(1, 2, 3), "-")) // 1-2-3
+}
 ```
 
-Docusaurus 监听站点目录，改 Markdown 即时刷新；改 Kotlin 要先 `./gradlew :docs:docusaurusSite`，因为
-站点 import 的是编译产物。
+Kotlin 写法更顺手的地方，同时也提供扩展函数风格：
 
-## 目录结构
-
-| 路径 | 内容 |
-| --- | --- |
-| `package.json` | npm 版本的唯一来源（Dependabot 维护） |
-| `wrapper-revisions.properties` | 每个模块的 `-kt.N` 修订号 |
-| `ktjs-wrapper-template-core/src/jsMain/kotlin` | wrapper 声明 |
-| `ktjs-wrapper-template-core/src/jsTest/kotlin` | 对应的浏览器测试 |
-| `demo/src/jsMain` | demo 页面与它的 Kotlin 入口 |
-| `docs/src/jsMain/kotlin` | 站点配置与侧边栏 |
-| `docs/src/jsMain/resources` | Markdown 页面、MDX 首页、样式、译文 |
-
-## 锁文件
-
-整个 workspace 的 npm 依赖只解析一次，钉在 `kotlin-js-store/package-lock.json`。新增或升级 npm 依赖、
-或者改了模块版本之后要重新生成：
-
-```bash
-./gradlew kotlinUpgradePackageLock
+```kotlin
+val parts = "a, b ,c".splitTrim(",")
+val code = "42".toIntOrNull() ?: 0
 ```
 
-CI 会校验提交的锁文件，忘了重新生成会直接构建失败，而不是悄悄漂移。
+## 可选依赖
+
+`kmp-hutool-core` 只依赖 `kotlinx-datetime`，且只用于日期类型。核心之外的大块功能（JSON、HTTP、加密、数据库、POI……）**不打进本库**：某个功能需要 kotlinx 系列或其它 KMP 包时，由使用方自己加依赖，`commonMain` 不会隐式传递。哪些区域将来需要哪个包，见[模块页](../modules/core.md)。
+
+## 从源码构建
+
+```bash
+./gradlew :kmp-hutool-core:jvmTest   # JVM 单元测试
+./gradlew :kmp-hutool-core:jsTest    # 同一套测试在 Node.js 上跑
+./gradlew :docs:docusaurusBuild      # 本文档站
+./gradlew pagesSite                  # 文档 + 演示 + API，GitHub Pages 用的目录结构
+```
+
+网络慢时的镜像配置放在**自己的** `~/.gradle/init.d/*.gradle.kts` 与 `~/.npmrc`，仓库里的构建脚本必须指向公共仓库，保证 CI 可复现。更多说明见[设计](design.md)。

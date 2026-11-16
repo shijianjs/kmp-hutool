@@ -1,0 +1,21 @@
+NOTICE
+
+kmp-hutool
+Copyright 2026 shijianjs
+
+This project is a Kotlin Multiplatform rewrite of Hutool.
+
+Upstream project: Hutool
+Upstream repository: https://github.com/chinabugotech/hutool
+Upstream version used: 5.8.48
+Upstream copyright: Copyright (c) Hutool (https://github.com/chinabugotech/hutool)
+Upstream license: Mulan Permissive Software License, Version 2 (Mulan PSL v2)
+License text: https://license.coscl.org.cn/MulanPSL2
+
+Files under kmp-hutool-core/src/commonMain that carry an `@hutool <fully qualified class>`
+KDoc tag are derivative works of the corresponding Hutool classes. They remain subject to
+Mulan PSL v2; the MIT license in LICENSE covers the original Kotlin rewrite, the build,
+the documentation site, the demo and the scripts.
+
+If you redistribute this library, keep this NOTICE, the upstream copyright notice and the
+Mulan PSL v2 text together with the MIT license.

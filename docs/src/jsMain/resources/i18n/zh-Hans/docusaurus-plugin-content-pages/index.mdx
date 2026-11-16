@@ -1,47 +1,33 @@
 ---
-title: ktjs-wrapper-template
-description: 一个立刻能跑的 Kotlin/JS wrapper 项目
+title: kmp-hutool
+description: 为 Kotlin Multiplatform 改写的 Hutool 工具库
 hide_table_of_contents: true
 ---
 
-import logo from '@site/static/img/ktjs-wrapper-template-logo.png';
+# kmp-hutool
 
-{/* `<ktjs-…>` 分区来自 ktjs-docusaurus 的工具箱：Gradle 插件把它的 bundle 放到 `static/ktjs-client/`，
-    `ClientModule.kt` 在页面 hydrate 之后加载它。`href` 写成相对路径，两种 locale 前缀下都能用；
-    `logo` 用 import 取，这样 URL 会带上本站实际的 `baseUrl`。 */}
+为 Kotlin Multiplatform 改写的 Hutool 工具库：JVM、JavaScript、WebAssembly 共用同一份 `commonMain` 源码。
 
-<ktjs-hero logo-src={logo} title="ktjs-wrapper-template" tagline="一个可以照抄的 Kotlin/JS wrapper 项目">
+**[阅读文档](/intro)** ·
+**[在线演示](https://shijianjs.github.io/kmp-hutool/demo/)** ·
+**[API 文档](https://shijianjs.github.io/kmp-hutool/api/)** ·
+**[GitHub](https://github.com/shijianjs/kmp-hutool)**
 
-<ktjs-action kind="primary" href="intro">开始阅读</ktjs-action>
+## 为什么做这个移植
 
-<ktjs-action kind="secondary" href="https://github.com/shijianjs/ktjs-wrapper-template" icon="simple-icons:github">GitHub</ktjs-action>
+| | |
+| --- | --- |
+| **一套源码，三个目标** | 所有工具都在 `commonMain`，同时编译到 JVM、JavaScript 与 WebAssembly。 |
+| **Kotlin 写法，不是 Java 复制** | 合并门面、`kotlinx-datetime` 值类型、显式 `toXxx` 转换、`data class` 值对象。 |
+| **没有隐藏依赖** | 核心只依赖 `kotlinx-datetime`，更大的领域保持可选。 |
+| **诚实的覆盖率** | 上游 1557 个类全部入清单，每个排除项都带理由。 |
+| **中英文档** | 本站与演示页都能在中英文之间切换。 |
+| **许可清晰** | 本项目 MIT，衍生自的上游代码为 Mulan PSL v2。 |
 
-</ktjs-hero>
+## 接下来
 
-<ktjs-features section-title="为什么从这里开始" tinted>
-
-<ktjs-feature icon="lucide:play" title="拿来就能跑">克隆下来就是一个能构建、能测试、能部署的项目——第一次 `./gradlew build` 之前没有任何占位符要填。</ktjs-feature>
-
-<ktjs-feature icon="lucide:package" title="一个包一个模块">一个 wrapper 模块把一个 npm 包映射成一个 Kotlin 包。加第二个包就是复制一个目录，不用重新设计结构。</ktjs-feature>
-
-<ktjs-feature icon="lucide:shield-check" title="类型而不是 dynamic">上游 `.d.ts` 写成 `external` 声明，编译期就能查；公开面用 `kotlin-browser` 的 `web.*` 类型，能和其他 wrapper 组合。</ktjs-feature>
-
-<ktjs-feature icon="lucide:flask-conical" title="在浏览器里测">模块的测试跑在 Chromium 里、打的是真实自定义元素，demo 还有自己的 Playwright 套件，两者都接进了 CI。</ktjs-feature>
-
-<ktjs-feature icon="lucide:book-open" title="文档也是 Kotlin">本站就是由 ktjs-docusaurus 构建的 Kotlin/JS 模块：类型化的配置与侧边栏、Markdown 页面、中英双语。</ktjs-feature>
-
-<ktjs-feature icon="lucide:rocket" title="Pages 与发布已接好">`pagesSite` 组装文档、demo 与 API 文档；`release.yml` 负责签名并经由 Maven Central hub 发布模块。</ktjs-feature>
-
-</ktjs-features>
-
-<ktjs-next-steps section-title="接下来">
-
-<ktjs-step href="intro" title="简介">仓库里有什么，为什么不用任何初始化就能用。</ktjs-step>
-
-<ktjs-step href="guide/getting-started" title="快速开始">环境要求、构建任务与两个开发服务器。</ktjs-step>
-
-<ktjs-step href="guide/deriving-a-project" title="派生新项目">把它改成你自己的 wrapper 的改名清单。</ktjs-step>
-
-<ktjs-step href="https://shijianjs.github.io/ktjs-wrapper-template/api/" title="API 文档">发布模块的 Dokka 产物。</ktjs-step>
-
-</ktjs-next-steps>
+- [简介](/intro)——这个库是什么、数字从哪里来。
+- [快速开始](/guide/getting-started)——坐标与第一个例子。
+- [设计](/guide/design)——移植了什么、改写在哪里、放弃了什么。
+- [覆盖率](/guide/coverage)——按类清单与每条排除理由。
+- [许可证](/guide/licensing)——MIT 与 Mulan PSL v2。

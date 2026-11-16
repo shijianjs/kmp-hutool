@@ -1,0 +1,44 @@
+{
+  "_comment": [
+    "Reasons used by scripts/hutool_coverage.py. 'modules' excludes a whole upstream module,",
+    "'classes' excludes a single fully qualified class. Every reason must name the capability",
+    "that Kotlin common code cannot provide, so a reader can verify it against the Java source."
+  ],
+  "modules": {
+    "hutool-ai": "Talks to remote model endpoints through java.net sockets and needs per-vendor credentials; a KMP port belongs in a separate HTTP-based module.",
+    "hutool-all": "Aggregator POM: contains only two dependency-descriptor classes, no logic to port.",
+    "hutool-aop": "JDK dynamic proxies and bytecode libraries (Javassist/CGLib); there is no equivalent interception mechanism in commonMain.",
+    "hutool-bom": "Bill-of-materials POM with dependency management only; no classes exist to port.",
+    "hutool-captcha": "Renders images with java.awt.Graphics2D; commonMain has no 2D graphics backend.",
+    "hutool-db": "Built on JDBC (java.sql.Connection/ResultSet); KMP persistence has to choose a driver per platform instead.",
+    "hutool-extra": "Servlet/FTP/mail/QR-code/template wrappers around javax.* and JVM-only libraries.",
+    "hutool-http": "java.net.HttpURLConnection and javax.net.ssl; the multiplatform equivalent is an HTTP client such as Ktor, which users add themselves.",
+    "hutool-poi": "Apache POI reads and writes Office files through java.io and java.awt; JVM-only.",
+    "hutool-script": "javax.script engines (GraalJS/Nashorn) are JVM-only.",
+    "hutool-socket": "java.net sockets plus NIO channels; no socket API in commonMain.",
+    "hutool-system": "java.lang.management, OSHI and JVM process introspection; per-OS data must come from expect/actual code."
+  },
+  "classes": {
+    "cn.hutool.core.bean.BeanUtil": "Copies properties through java.lang.reflect.Field/Method; Kotlin data classes are constructed explicitly instead.",
+    "cn.hutool.core.bean.BeanDesc": "Reflection-based property metadata.",
+    "cn.hutool.core.clone.CloneSupport": "Relies on Object.clone(), which commonMain does not expose.",
+    "cn.hutool.core.comparator.PropertyComparator": "Needs reflection to read a bean property by name.",
+    "cn.hutool.core.convert.Convert": "Hutool dispatches on java.lang.reflect.Type; the port keeps explicit toXxx functions, so the registry/converter SPI is intentionally not ported.",
+    "cn.hutool.core.convert.ConverterRegistry": "Service-loader based converter registry for java.lang.reflect.Type.",
+    "cn.hutool.core.date.DateUtil": "java.util.Date/Calendar based; kotlinx-datetime replaces it and the signatures differ.",
+    "cn.hutool.core.date.LocalDateTimeUtil": "java.time.LocalDateTime based; use kotlinx-datetime instead.",
+    "cn.hutool.core.getter.BasicTypeGetter": "Interfaces designed for the removed BasicTypeGetter/OptBasicTypeGetter bean layer.",
+    "cn.hutool.core.io.FileUtil": "Files and streams (java.io/java.nio); cannot exist in commonMain.",
+    "cn.hutool.core.lang.ClassScanner": "Walks class loaders and jars; no classpath concept in commonMain.",
+    "cn.hutool.core.lang.SimpleCache": "java.util.concurrent map; replaced by a platform cache when needed.",
+    "cn.hutool.core.net.NetUtil": "java.net network interfaces and local address probing.",
+    "cn.hutool.core.text.Normalizer": "Wraps java.text.Normalizer, absent from commonMain.",
+    "cn.hutool.core.thread.ThreadUtil": "java.lang.Thread; no threads in common code.",
+    "cn.hutool.core.util.ClassUtil": "Class loading, packages and resources through the class loader.",
+    "cn.hutool.core.util.ModifierUtil": "Reads java.lang.reflect.Modifier flags.",
+    "cn.hutool.core.util.ReflectUtil": "The reflection toolkit itself.",
+    "cn.hutool.core.util.RuntimeUtil": "Starts processes with Runtime/ProcessBuilder.",
+    "cn.hutool.core.util.TypeUtil": "Works on java.lang.reflect.Type and generic signatures.",
+    "cn.hutool.core.util.XmlUtil": "javax.xml DOM/SAX parsers; no XML parser in the standard library."
+  }
+}
