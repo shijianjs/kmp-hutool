@@ -1,5 +1,6 @@
 package io.github.shijianjs.kmphutool.core
 
+import io.github.shijianjs.kmphutool.core.date.ChineseDate
 import io.github.shijianjs.kmphutool.core.date.chinese.ChineseMonth
 import io.github.shijianjs.kmphutool.core.date.chinese.GanZhi
 import io.github.shijianjs.kmphutool.core.date.chinese.LunarFestival
@@ -30,6 +31,16 @@ class LunarInfoTest {
         assertEquals("甲子", GanZhi.cyclicalm(0))
         assertTrue(LunarFestival.getFestivals(1, 1).contains("春节"))
         assertEquals(2, LunarFestival.getFestivals(6, 6).size)
+    }
+
+    @Test
+    fun convertsBetweenCalendars() {
+        val newYear = ChineseDate(LocalDate(2024, 2, 10))
+        assertEquals(2024, newYear.getChineseYear())
+        assertEquals(1, newYear.getMonth())
+        assertEquals(1, newYear.getDay())
+        assertEquals("正月初一", newYear.getChineseMonthName() + newYear.getChineseDay())
+        assertEquals(LocalDate(2024, 2, 10), ChineseDate(2024, 1, 1).getGregorianDate())
     }
 
     @Test
