@@ -5,9 +5,9 @@
 在 `commonMain` 里尽可能多地实现 Hutool 的可移植功能，Kotlin 化改写而非照抄；提供中英双语文档站（为主）、可跳转的 demo 与 API 文档（GitHub Pages）；输出功能清单与自动计算的覆盖率（含未覆盖理由）；注明本项目 MIT 与上游 Mulan PSL v2 许可。
 
 - 总计：1557
-- 已完成：302
-- 明确不做：1160
-- 待完成：95
+- 已完成：320
+- 明确不做：1157
+- 待完成：80
 
 详细清单：[coverage.md](docs/development/coverage.md)（由 `scripts/hutool_coverage.py` 生成，不在本文件复制明细）。
 
