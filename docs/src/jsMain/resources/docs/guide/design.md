@@ -89,6 +89,16 @@ Local network workarounds must not leak into the repository:
   `exclusiveContent`, so the build never depends on a mirror being present.
 * GitHub Actions runs against the public registries, exactly like a fresh clone.
 
+Every Kotlin/Native target is declared in `kmp-hutool-core/build.gradle.kts`. Compiling a klib is
+host-independent, so a Linux, Windows or macOS checkout all produce the same klibs and a
+platform-specific mistake (a `java.*` call, a JVM-only collection API) fails immediately instead of
+only on the platform that runs it. What is host-dependent is a *test executable*: it can be linked
+and run only for the host's own family. The build therefore disables foreign `*Test` tasks, and CI
+runs three jobs: Linux (`jvmTest`, `jsTest`, `wasmJsTest`, `linuxX64Test` plus the Pages site),
+Windows (`mingwX64Test`) and macOS (`macosArm64Test` + `iosSimulatorArm64Test` on Apple silicon,
+`macosX64Test` + `iosX64Test` on Intel). That mirrors the official Kotlin Multiplatform CI guidance:
+split by OS, let each runner verify its own native targets.
+
 ## Coverage
 
 `scripts/hutool_inventory.py` walks a local Hutool clone and writes one item per Java source file

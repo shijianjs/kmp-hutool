@@ -4,7 +4,8 @@
 
 ## 项目结构
 
-- `kmp-hutool-core`：唯一发布模块，`commonMain` 实现，target 为 `jvm`、`js`、`wasmJs`。版本 `kmp-hutool.version`（当前 `5.8.48-kt.1`），group `io.github.shijianjs`。
+- `kmp-hutool-core`：唯一发布模块，`commonMain` 实现，target 为 `jvm`、`js`、`wasmJs` 以及全套 Kotlin/Native（`linuxX64`、`linuxArm64`、`mingwX64`、`macosX64`、`macosArm64`、`iosX64`、`iosArm64`、`iosSimulatorArm64`）。版本 `kmp-hutool.version`（当前 `5.8.48-kt.1`），group `io.github.shijianjs`。
+  - 所有 target 都声明，保证任意宿主都能编译全部 klib；非宿主的 `*Test` 在构建脚本里禁用，由 CI 的 Linux / Windows / macOS 三个任务各跑自己的原生套件。加 target 时同步改 `runnableNativeTargets` 与 `.github/workflows/ci.yml`。
 - `demo`：浏览器演示页（Kotlin/JS + `kotlin-browser`），中英文切换，发布在 Pages 的 `/demo/`。
 - `docs`：文档站，Kotlin/JS 模块，配置在 `docs/src/jsMain/kotlin/.../Config.kt`，页面在 `docs/src/jsMain/resources/docs/`，译文在 `docs/src/jsMain/resources/i18n/zh-Hans/`。英文是源语言。
 - `scripts/hutool_inventory.py`、`scripts/hutool_coverage.py`、`scripts/hutool-exclusions.json`：功能清单与覆盖率。
@@ -15,11 +16,14 @@
 ```powershell
 .\gradlew.bat :kmp-hutool-core:jvmTest --console=plain   # 主测试入口
 .\gradlew.bat :kmp-hutool-core:jsTest --console=plain    # 同一套测试在 Node 上跑
+.\gradlew.bat :kmp-hutool-core:allTests --console=plain  # 当前宿主能跑的全部（含本地原生套件）
 .\gradlew.bat :demo:jsBrowserDistribution
 .\gradlew.bat :docs:docusaurusBuild
 .\gradlew.bat pagesSite
 python scripts\hutool_coverage.py                        # 刷新覆盖率与站点页面
 ```
+
+- `build` 会编译全部 target 的 klib（含所有 Native 目标），因此本地能提前发现平台专属 API；但原生测试二进制只能在同族宿主运行，非宿主测试已自动禁用，不要为了“全跑”去掉这个开关。
 
 - `commonMain` 只能用跨平台 API。JVM 编译通过不代表 JS/Wasm 通过：`forEachRemaining`、`sortedMapOf`、`removeIf`、`StringBuilder.delete/setCharAt`、`@Synchronized` 都只在 JVM 上存在，改完必须跑一次 `compileKotlinJs`。
 - Kotlin `object` 内的成员会遮蔽 stdlib 同名函数：`NumberUtil.ceil/floor` 必须写 `kotlin.math.ceil/floor`，否则无限递归（StackOverflow）。

@@ -15,8 +15,10 @@ permissions:
   contents: read
 
 jobs:
+  # The primary job: JVM, JS, Wasm and the host-native suite on Linux, plus the documentation site,
+  # the demo bundle and the Dokka reference that the Pages workflow deploys.
   build:
-    name: Build and test
+    name: Build and test (Linux)
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
@@ -41,15 +43,21 @@ jobs:
         if: github.actor == 'dependabot[bot]'
         run: ./gradlew kotlinUpgradePackageLock
 
-      # `build` compiles and tests every target of kmp-hutool-core (JVM and Node.js) plus the docs
-      # configuration and the demo bundle.
+      # `build` compiles every target (JVM, JS, Wasm, all Kotlin/Native klibs) and runs the tests this
+      # host can execute: JVM, Node.js and linuxX64. Non-host native tests are disabled in the build
+      # script, so this never trips over a test binary it cannot link.
       - name: Build and test
         run: ./gradlew build --stacktrace
 
-      # Validates the demo bundle, the documentation site and the Dokka reference that the Pages
-      # workflow deploys.
+      # Assembles the documentation site, the demo and Dokka under build/pages. Runs here so a broken
+      # docs link fails CI instead of only failing the deploy workflow.
       - name: Assemble Pages site
         run: ./gradlew pagesSite
+
+      # The coverage page is generated from `@hutool` tags; this prints the totals with the same
+      # inventory the site uses, so the numbers in the log can be checked against the docs page.
+      - name: Coverage totals
+        run: python scripts/hutool_coverage.py --check
 
       - name: Upload refreshed npm lock file
         if: github.actor == 'dependabot[bot]'
@@ -63,5 +71,49 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: test-reports
+          path: "**/build/reports/tests/**"
+          if-no-files-found: ignore
+
+  # Kotlin/Native can only run a test executable on its own host family, which is why the build
+  # declares every target but disables the foreign test tasks. These two jobs cover the remaining
+  # hosts: Windows proves mingwX64, macOS proves the Apple targets.
+  native-tests:
+    name: Native tests (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+          - os: macos-latest
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up JDK
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      # A Dependabot PR carries no lock file, and the npm workspace is configured during
+      # configuration, so refresh it before the native build.
+      - name: Refresh npm lock file
+        if: github.actor == 'dependabot[bot]'
+        run: ./gradlew kotlinUpgradePackageLock
+
+      # Runs every test this host can execute. The build script enables only the host's own native
+      # suite, so Windows covers mingwX64 and macOS covers its arch's macOS/iOS-simulator tests.
+      - name: Run tests
+        run: ./gradlew :kmp-hutool-core:allTests --stacktrace
+
+      - name: Upload test reports
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: native-test-reports-${{ matrix.os }}
           path: "**/build/reports/tests/**"
           if-no-files-found: ignore

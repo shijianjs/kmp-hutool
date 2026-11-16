@@ -74,6 +74,8 @@ Hutool 有些工具被拆成两个类，比如 `StrUtil` 与 `CharSequenceUtil`�
 * `settings.gradle.kts` 用 `exclusiveContent` 把 Kotlin 与 kotlinx 各组钉到 `mavenCentral()`，构建不依赖任何镜像存在。
 * GitHub Actions 直接访问公共仓库，与全新 clone 一致。
 
+Kotlin/Native 的全部目标都在 `kmp-hutool-core/build.gradle.kts` 里声明。klib 编译与宿主无关，因此 Linux、Windows、macOS 上检出都会产出同样的 klib；一旦有平台专属写法（`java.*` 调用、JVM-only 集合 API），会立即编译失败，而不是等到真正运行它的平台才发现。宿主相关的是**测试二进制**：只能在同族宿主上链接运行。因此构建脚本禁用非宿主 `*Test`，CI 分三个任务：Linux（`jvmTest`、`jsTest`、`wasmJsTest`、`linuxX64Test` 加 Pages 站点）、Windows（`mingwX64Test`）、macOS（Apple 芯片跑 `macosArm64Test` + `iosSimulatorArm64Test`，Intel 跑 `macosX64Test` + `iosX64Test`）。这与 Kotlin 官方多平台 CI 建议一致：按 OS 拆分，让每个 runner 验证自己的原生目标。
+
 ## 覆盖率
 
 `scripts/hutool_inventory.py` 遍历本地 Hutool 克隆，一个 Java 源文件算一项（共 1557 项），记录所属模块与 public 成员数。`scripts/hutool_coverage.py` 随后：

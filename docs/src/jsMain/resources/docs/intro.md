@@ -6,9 +6,25 @@ title: Introduction
 # kmp-hutool
 
 `kmp-hutool` is [Hutool](https://github.com/chinabugotech/hutool)'s utility collection rewritten for
-Kotlin Multiplatform. It targets JVM, JavaScript and WebAssembly from one `commonMain` source set, so
-the same string, collection, number, date and encoding helpers run on a server, in Node.js and in a
-browser.
+Kotlin Multiplatform. It targets JVM, JavaScript, WebAssembly and Kotlin/Native from one `commonMain`
+source set, so the same string, collection, number, date and encoding helpers run on a server, in a
+browser, on Node.js, and on desktop, iOS, Android or Linux binaries.
+
+## Platforms
+
+| Target | Notes |
+| --- | --- |
+| JVM | the widest surface; `jvmTest` runs first in CI |
+| JavaScript | Node.js tests, plus the browser demo |
+| WebAssembly (wasmJs) | Node.js tests |
+| `linuxX64`, `linuxArm64` | klib compiled from any host, tests run on Linux CI |
+| `mingwX64` | tests run on Windows CI |
+| `macosX64`, `macosArm64`, `iosX64`, `iosArm64`, `iosSimulatorArm64` | klib compiled from any host, tests run on macOS CI |
+
+Every target is declared in `kmp-hutool-core/build.gradle.kts`, so a checkout on one OS still compiles
+the klibs for the others and surfaces a portability mistake early. A native test executable can only
+be linked and run on its own host family, so foreign test tasks are disabled in the build script and
+each OS's CI job runs its own suite.
 
 The port is not a mechanical copy. Java-only capabilities (reflection, `java.io`, threads, AWT,
 `BigDecimal`, streams) are left out, and where Kotlin has a better idiom the API uses it — merged

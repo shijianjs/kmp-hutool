@@ -2,13 +2,25 @@
 
 <p align="center"><img src="docs/src/jsMain/resources/static/img/kmp-hutool-logo.svg" width="120" alt="kmp-hutool"></p>
 
-Hutool 工具库的 Kotlin Multiplatform 改写版：JVM、JavaScript、WebAssembly 共用同一份 `commonMain` 源码。
+Hutool 工具库的 Kotlin Multiplatform 改写版：JVM、JavaScript、WebAssembly 与 Kotlin/Native 共用同一份 `commonMain` 源码。
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
 **[文档](https://shijianjs.github.io/kmp-hutool/)** ·
 **[在线演示](https://shijianjs.github.io/kmp-hutool/demo/)** ·
 **[API 文档](https://shijianjs.github.io/kmp-hutool/api/)**
+
+## 平台
+
+| 目标 | 测试运行位置 |
+| --- | --- |
+| `jvm` | 每次 CI |
+| `js`（Node.js）、`wasmJs`（Node.js） | Linux CI |
+| `linuxX64`、`linuxArm64` | `linuxX64` 在 Linux CI；`linuxArm64` 的 klib 任意宿主可编 |
+| `mingwX64` | Windows CI |
+| `macosX64`、`macosArm64`、`iosX64`、`iosArm64`、`iosSimulatorArm64` | macOS CI（宿主自身架构）；klib 任意宿主可编 |
+
+所有目标都会声明，因此在哪台机器检出都会顺带编译其他平台的 klib，可移植性问题能早暴露。原生测试二进制只能在同族宿主上链接运行，所以构建脚本禁用非宿主测试，由各 OS 的 CI 各跑自己那套。
 
 ## 这是什么
 
@@ -20,7 +32,7 @@ Hutool 工具库的 Kotlin Multiplatform 改写版：JVM、JavaScript、WebAssem
 
 | 模块 | 坐标 | 作用 |
 | --- | --- | --- |
-| `kmp-hutool-core` | `io.github.shijianjs:kmp-hutool-core:5.8.48-kt.1` | 库本体：`commonMain` 工具类，JVM 与 Node.js 都有测试 |
+| `kmp-hutool-core` | `io.github.shijianjs:kmp-hutool-core:5.8.48-kt.1` | 库本体：`commonMain` 工具类，JVM、Node.js、Wasm 与原生宿主都有测试 |
 | `demo` | — | 浏览器演示页，中英文可切换，发布在 `/demo/` |
 | `docs` | — | 本文档站，由 [ktjs-docusaurus](https://github.com/shijianjs/ktjs-docusaurus) 构建 |
 
@@ -31,6 +43,7 @@ Hutool 工具库的 Kotlin Multiplatform 改写版：JVM、JavaScript、WebAssem
 ```bash
 ./gradlew :kmp-hutool-core:jvmTest    # JVM 单元测试
 ./gradlew :kmp-hutool-core:jsTest     # 同一套测试在 Node.js 上跑
+./gradlew :kmp-hutool-core:allTests  # 当前宿主能跑的全部测试，含本地原生套件
 ./gradlew :docs:docusaurusBuild       # 文档站
 ./gradlew :demo:jsBrowserDistribution # 演示页产物
 ./gradlew pagesSite                   # 文档 + 演示 + API，GitHub Pages 布局
