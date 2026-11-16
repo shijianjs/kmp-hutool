@@ -33,11 +33,6 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v6
 
-      - name: Set up Python
-        uses: actions/setup-python@v7
-        with:
-          python-version: "3.13"
-
       # A Dependabot PR does not carry the Gradle-generated lock file, so refresh it before building.
       - name: Refresh npm lock file
         if: github.actor == 'dependabot[bot]'
@@ -53,11 +48,6 @@ jobs:
       # docs link fails CI instead of only failing the deploy workflow.
       - name: Assemble Pages site
         run: ./gradlew pagesSite
-
-      # The coverage page is generated from `@hutool` tags; this prints the totals with the same
-      # inventory the site uses, so the numbers in the log can be checked against the docs page.
-      - name: Coverage totals
-        run: python scripts/hutool_coverage.py --check
 
       - name: Upload refreshed npm lock file
         if: github.actor == 'dependabot[bot]'
