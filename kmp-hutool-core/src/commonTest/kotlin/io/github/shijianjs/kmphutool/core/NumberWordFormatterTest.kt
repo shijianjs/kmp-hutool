@@ -15,8 +15,7 @@ class NumberWordFormatterTest {
     }
 
     @Test
-    fun formatsSimpleUnits() {
-        assertEquals("2.1k", NumberWordFormatter.formatSimple(2100))
+    fun formatsSimpleUnits() {        assertEquals("2.1k", NumberWordFormatter.formatSimple(2100))
         assertEquals("438.43w", NumberWordFormatter.formatSimple(4_384_300))
         assertEquals("4.38m", NumberWordFormatter.formatSimple(4_384_300, false))
     }
