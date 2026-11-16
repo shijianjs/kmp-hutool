@@ -27,7 +27,7 @@ title: core
 | `core.io` | `FastByteBuffer`、`FastStringWriter`、`FastByteArrayOutputStream`、`NullOutputStream`、`StreamProgress`、`LineHandler`、`IORuntimeException` |
 | `core.setting` | `GroupedMap`、`GroupedSet`、`SettingRuntimeException` |
 | `core.thread.lock` | `NoLock`、`NoReadWriteLock` |
-| `core.json` | `JSONString`、`JSONBeanParser`、`JSONException`、`JSONStrFormatter`（JSON 对象模型尚未移植） |
+| `core.json` | `JSONString`、`JSONBeanParser`、`JSONException`、`JSONStrFormatter`、`JSON`、`JSONObject`、`JSONArray`、`JSONNull`、`JSONTokener`、`JSONParser`、`JSONObjectIter`、`JSONSupport`，以及四个序列化接口 |
 | `core.jwt` | `JWTException`、`JWTSigner`、`NoneJWTSigner`、`AlgorithmUtil`（Claims 容器待 JSON 模型完成后补齐） |
 | `core.cache` | `CacheListener`、`Cache`、`CacheObj`、`AbstractCache`、`FIFOCache`、`LFUCache`、`LRUCache`、`NoCache`、`CacheUtil` |
 | `core.cron` | `CronException`、`CronConfig`、`Task`、`CronTask`、`Part`、七个 `PartMatcher` 实现、`PartParser`、`PatternParser`、`CronPattern`、`CronPatternBuilder` |
@@ -68,7 +68,8 @@ IdUtil.getSnowflakeNextId()
 
 ## 日期时间
 
-Hutool 的 `DateUtil` 没有作为类移植：日期统一是 `kotlinx.datetime` 的值类型，`kotlinx-datetime` 也是本模块唯一依赖。已实现的部分包括 `DateUnit`/`DateField`/`Month`/`Week`/`Quarter`、`YearQuarter`、`BetweenFormatter`/`TimeInterval`、`DatePattern` 常量，以及整个 `date.chinese` 包（`LunarInfo`、`ChineseMonth`、`SolarTerms`、`GanZhi`、`LunarFestival`）和 `ChineseDate`：
+Hutool 的 `DateUtil` 没有作为类移植：日期统一是 `kotlinx.datetime` 的值类型。本模块依赖
+`kotlinx-datetime` 处理日期，依赖 `kotlinx-serialization-json` 提供 JSON 值模型。已实现的部分包括 `DateUnit`/`DateField`/`Month`/`Week`/`Quarter`、`YearQuarter`、`BetweenFormatter`/`TimeInterval`、`DatePattern` 常量，以及整个 `date.chinese` 包（`LunarInfo`、`ChineseMonth`、`SolarTerms`、`GanZhi`、`LunarFestival`）和 `ChineseDate`：
 
 ```kotlin
 val lunar = ChineseDate(2024, 1, 1) // 对应公历 2024-02-10
@@ -120,6 +121,25 @@ CronPatternBuilder.of()
 `nextMatchAfter` 没有移植：调度器自己推进时钟并调用 `match`，这样引擎不依赖
 `java.util.Calendar`/`TimeZone`。
 
+## JSON
+
+`core.json` 保留 Hutool 的动态 API（`JSONObject`、`JSONArray`、`JSONParser`），但内部用普通
+Kotlin 值存储，不再依赖反射。解析与输出走 `kotlinx-serialization-json`，这只是实现细节，使用方
+不需要开启序列化编译器插件。
+
+```kotlin
+val user = JSONObject("""{"name":"Ada","tags":["kotlin","kmp"]}""")
+user.getStr("name")                 // Ada
+user.getJSONArray("tags")?.getStr(0) // kotlin
+user.put("active", true).toJSONString()
+
+val parsed = JSONParser.of(JSONTokener("""[1,2,3]""")).parse() as JSONArray
+```
+
+`JSONSupport` 会保存解析后的 JSON 并提供 `toJSON`/`toJSONString`；上游 `parse(JSON)` 的反射字段
+拷贝在 common Kotlin 不可用。需要类型化 Bean 时请直接用 `kotlinx.serialization` 的
+`@Serializable` 数据类。
+
 
 ## 布隆过滤器
 
@@ -138,7 +158,7 @@ val custom = SDBMFilter(1_000)         // 单独使用 SDBM 哈希过滤器
 
 | 领域 | 上游模块 | 本库做法 |
 | --- | --- | --- |
-| JSON | `hutool-json` | 契约与字符串格式化在 core；对象模型与解析请用 `kotlinx-serialization-json` |
+| JSON | `hutool-json` | 动态 `JSONObject`/`JSONArray` 模型已在 core；类型化 Bean 用 `kotlinx-serialization-json` 数据类，`XML` 辅助类仍待补 |
 | HTTP | `hutool-http` | 不打进本库；用 Ktor |
 | 加密 | `hutool-crypto` | 算法名与异常在 core；摘要/加解密引擎仍交给平台 |
 | 日志 | `hutool-log` | 不打进本库；在平台日志之上用 `kotlin-logging` |

@@ -5,15 +5,15 @@
 在 `commonMain` 里尽可能多地实现 Hutool 的可移植功能，Kotlin 化改写而非照抄；提供中英双语文档站（为主）、可跳转的 demo 与 API 文档（GitHub Pages）；输出功能清单与自动计算的覆盖率（含未覆盖理由）；注明本项目 MIT 与上游 Mulan PSL v2 许可。
 
 - 总计：1557
-- 已完成：362
-- 明确不做：1171
-- 待完成：24
+- 已完成：374
+- 明确不做：1166
+- 待完成：17
 
 详细清单：[coverage.md](docs/development/coverage.md)（由 `scripts/hutool_coverage.py` 生成，不在本文件复制明细）。
 
 ### 当前待办
 
-- [ ] `hutool-json` 11 项：`JSONObjectIter`、`JSONParser`、`JSONSupport`、`serialize/{JSONArraySerializer,JSONDeserializer,JSONObjectSerializer,JSONSerializer}`、`xml/{JSONXMLParser,JSONXMLSerializer}`、`XML`、`XMLTokener`。需要先建立 `JSONObject`/`JSONArray`/`JSONTokener` 对象模型；可复用 `kotlinx-serialization-json` 做语法后端，但动态 Map 风格 API 仍是自建 facade。
+- [ ] `hutool-json` 4 项（XML 方向）：`JSONXMLParser`、`JSONXMLSerializer`、`XML`、`XMLTokener`。动态 JSON 模型（`JSONObject`/`JSONArray`/`JSONNull`/`JSONTokener`）与 parser/serializer 已完成，XML 层只需在其上做扫描与标签映射。
 - [ ] `hutool-crypto` 4 项：`SM3`、`TOTP`、`Argon2`、`SignUtil`，依赖 `MessageDigest`/`Mac`/`Signature`。按“门面 + 可选后端”设计，纯 Kotlin 可实现的先做，平台 API 用 expect/actual。
 - [ ] `hutool-core` 3 项：`CityHash`（纯 Kotlin 算法，可移植）、`PatternPool`/`RegexPool`（常量表，`java.util.regex.Pattern` 换 `kotlin.text.Regex`）。
 - [ ] `hutool-jwt` 3 项：`JWTHeader`、`JWTPayload`、`JWTUtil`，依赖 JSON 层与 Base64，JSON 完成后补。
@@ -29,6 +29,8 @@
 - date：`TimeZoneUtil`、`ZoneUtil`、`DateBasic`（`kotlinx-datetime`，`localeTag` 代替 `Locale`）
 - cache：`Cache`/`CacheObj`/`AbstractCache`/FIFO/LFU/LRU/NoCache/`CacheUtil`，单线程语义已写入 KDoc
 - cron：支撑层 `Part`/`CronPattern`/`PatternMatcher` 与 12 个任务/解析/匹配类，5/6/7 段表达式全部可解析匹配
+- json：`JSON`/`JSONObject`/`JSONArray`/`JSONNull`/`JSONTokener`/`JSONParser`/`JSONObjectIter`/`JSONSupport` 与四个序列化接口，动态模型底层用 `kotlinx-serialization-json`
+- 依赖：core 现依赖 `kotlinx-datetime` 与 `kotlinx-serialization-json`，均支持 jvm/js/wasmJs/native
 - 排除项：log、JVM 强相关 core、`WeakCache` 等 20 类已写入 `scripts/hutool-exclusions.json` 并逐条给出理由
 
 ### 限制与约束

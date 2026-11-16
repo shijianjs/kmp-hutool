@@ -28,7 +28,7 @@ The only published module. Everything below lives in `commonMain`, so it compile
 | `core.io` | `FastByteBuffer`, `FastStringWriter`, `FastByteArrayOutputStream`, `NullOutputStream`, `StreamProgress`, `LineHandler`, `IORuntimeException` |
 | `core.setting` | `GroupedMap`, `GroupedSet`, `SettingRuntimeException` |
 | `core.thread.lock` | `NoLock`, `NoReadWriteLock` |
-| `core.json` | `JSONString`, `JSONBeanParser`, `JSONException`, `JSONStrFormatter` (the JSON object model is not ported yet) |
+| `core.json` | `JSONString`, `JSONBeanParser`, `JSONException`, `JSONStrFormatter`, `JSON`, `JSONObject`, `JSONArray`, `JSONNull`, `JSONTokener`, `JSONParser`, `JSONObjectIter`, `JSONSupport`, and the four serializer interfaces |
 | `core.jwt` | `JWTException`, `JWTSigner`, `NoneJWTSigner`, `AlgorithmUtil` (claim containers await the JSON model) |
 | `core.cache` | `CacheListener`, `Cache`, `CacheObj`, `AbstractCache`, `FIFOCache`, `LFUCache`, `LRUCache`, `NoCache`, `CacheUtil` |
 | `core.cron` | `CronException`, `CronConfig`, `Task`, `CronTask`, `Part`, the seven `PartMatcher` implementations, `PartParser`, `PatternParser`, `CronPattern`, `CronPatternBuilder` |
@@ -73,8 +73,8 @@ IdUtil.getSnowflakeNextId()
 
 ## Date and time
 
-Hutool's `DateUtil` is not ported as a class: dates are `kotlinx.datetime` values, and the
-`kotlinx-datetime` package is the only dependency of this module. The implemented date surface is
+Hutool's `DateUtil` is not ported as a class: dates are `kotlinx.datetime` values. This module
+depends on `kotlinx-datetime` for dates and `kotlinx-serialization-json` for the JSON value model. The implemented date surface is
 `DateUnit`/`DateField`/`Month`/`Week`/`Quarter`, `YearQuarter`, `BetweenFormatter`/`TimeInterval`,
 `DatePattern` constants, plus the whole `date.chinese` package (`LunarInfo`, `ChineseMonth`,
 `SolarTerms`, `GanZhi`, `LunarFestival`) and `ChineseDate`:
@@ -131,6 +131,26 @@ CronPatternBuilder.of()
 `Calendar`-based `nextMatchAfter` is not ported: a scheduler advances its own clock and calls
 `match`, which keeps the engine free of `java.util.Calendar`/`TimeZone`.
 
+## JSON
+
+`core.json` keeps Hutool's dynamic API (`JSONObject`, `JSONArray`, `JSONParser`) but stores ordinary
+Kotlin values instead of using reflection. Parsing and writing go through
+`kotlinx-serialization-json`, which is an implementation detail: consumers do not need the
+serialization compiler plugin.
+
+```kotlin
+val user = JSONObject("""{"name":"Ada","tags":["kotlin","kmp"]}""")
+user.getStr("name")                 // Ada
+user.getJSONArray("tags")?.getStr(0) // kotlin
+user.put("active", true).toJSONString()
+
+val parsed = JSONParser.of(JSONTokener("""[1,2,3]""")).parse() as JSONArray
+```
+
+`JSONSupport` stores the parsed JSON and exposes `toJSON`/`toJSONString`; upstream's reflective
+`parse(JSON)` field copy is not available in common Kotlin. For typed beans use
+`kotlinx.serialization` with `@Serializable` classes instead.
+
 
 ## Bloom filters
 
@@ -152,7 +172,7 @@ val custom = SDBMFilter(1_000)         // one filter with the SDBM hash
 
 | Area | Upstream module | What this port does |
 | --- | --- | --- |
-| JSON | `hutool-json` | contracts and the string formatter are in core; use `kotlinx-serialization-json` for the object model and parsing |
+| JSON | `hutool-json` | dynamic `JSONObject`/`JSONArray` model is in core; use `kotlinx-serialization-json` data classes for typed beans, and `XML` helpers are still pending |
 | HTTP | `hutool-http` | not bundled; use Ktor |
 | Crypto | `hutool-crypto` | algorithm names and exceptions are in core; digest/cipher engines stay platform-specific |
 | Logging | `hutool-log` | not bundled; use `kotlin-logging` on top of your platform logger |
