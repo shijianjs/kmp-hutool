@@ -222,6 +222,10 @@ fun sidebars(): SidebarsConfig = unsafeJso<Sidebars> {
                 },
                 unsafeJso<SidebarItem> {
                     type = SidebarItemTypes.doc
+                    id = "guide/ecosystem"
+                },
+                unsafeJso<SidebarItem> {
+                    type = SidebarItemTypes.doc
                     id = "guide/licensing"
                 },
             )
