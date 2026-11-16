@@ -111,3 +111,5 @@ split by OS, let each runner verify its own native targets.
 4. writes [coverage.md](coverage.md) and `build/hutool-coverage.json`.
 
 The generated page is the source of truth for numbers; no count is typed by hand.
+
+For the KMP libraries this core is designed to sit next to, see [the ecosystem page](ecosystem.md).

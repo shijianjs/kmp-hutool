@@ -86,3 +86,5 @@ Kotlin/Native 的全部目标都在 `kmp-hutool-core/build.gradle.kts` 里声明
 4. 生成 [coverage.md](coverage.md) 与 `build/hutool-coverage.json`。
 
 页面数字以脚本为准，不存在手工维护的计数。
+
+本核心设计上要搭配的 KMP 库见[生态页](ecosystem.md)。
