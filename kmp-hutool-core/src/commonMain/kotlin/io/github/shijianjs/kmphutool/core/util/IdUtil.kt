@@ -111,7 +111,9 @@ object IdUtil {
     }
 
     private fun uuid(secure: Boolean): String {
-        val random = if (secure) Random else Random(nowMillis())
+        // commonMain has no CSPRNG; both paths use the shared source. Seeding per call (an earlier
+        // version passed nowMillis()) made ids collide within the same millisecond.
+        val random = Random.Default
         val high = random.nextLong()
         val low = random.nextLong()
         // version 4 (random) in the high word, the RFC 4122 variant in the low word.
