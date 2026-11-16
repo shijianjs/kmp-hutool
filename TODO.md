@@ -18,7 +18,7 @@
 - [x] `hutool-crypto`：`SignUtil` 的参数排序摘要签名（MD5/SHA-1/SHA-256 纯 Kotlin）
 - [x] `hutool-setting` 3 个包装类与 `Argon2` 已按依赖缺失记为排除（见 `scripts/hutool-exclusions.json`）
 - [ ] 每批新增类后跑 `:kmp-hutool-core:jvmTest`、`:kmp-hutool-core:jsTest`、`:kmp-hutool-core:wasmJsTest`，并刷新覆盖率
-- [ ] 重建发布流水线：`release.yml` 与 `hub-release.py` 已删除（旧的按模块 `-kt.N` 模型与单版本不符），需要按当前单版本模型重新设计
+- [ ] 重建发布流水线：`release.yml` 与 `hub-release.py` 已删除（旧的按模块 `-kt.N` 模型与单版本不符），需要按当前单版本模型重新设计；阻塞于仓库尚未配置 Maven Central token 与签名 secrets，暂不提交会在 CI 里失败的 workflow
 - [ ] 首次发布前补全 POM 描述与仓库 Secrets（签名密钥）
 - [ ] 文档站内容随覆盖率增长补充示例（cache/date/cron 已补，剩余随 json/crypto/setting 推进）
 
