@@ -121,6 +121,11 @@ def classify(items: list[dict], done_tags: dict[str, list[str]], exclusions: dic
             record["status"] = "done"
             record["reason"] = ""
             record["kotlin"] = files
+        elif item["path"].endswith("package-info.java"):
+            # package-info is a documentation/annotation compilation unit: it declares no type and
+            # carries no runtime behaviour, so there is nothing to port.
+            record["status"] = "excluded"
+            record["reason"] = "`package-info.java` has no type or runtime behaviour to port."
         elif item["fqcn"] in class_exclusions:
             record["status"] = "excluded"
             record["reason"] = class_exclusions[item["fqcn"]]
