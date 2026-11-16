@@ -9,7 +9,7 @@ package io.github.shijianjs.kmphutool.core.collection
  *
  * @hutool cn.hutool.core.collection.Partition
  */
-class Partition<T> private constructor(
+open class Partition<T> constructor(
     /** The number of elements in each group, except possibly the last. */
     val size: Int,
     private val source: List<T>,
