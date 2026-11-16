@@ -1,5 +1,6 @@
 package io.github.shijianjs.kmphutool.core
 
+import io.github.shijianjs.kmphutool.core.dfa.SensitiveProcessor
 import io.github.shijianjs.kmphutool.core.dfa.WordTree
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -29,6 +30,14 @@ class WordTreeTest {
     fun ignoresStopCharactersAtStart() {
         val tree = WordTree().addWords("中国")
         assertTrue(tree.isMatch("，中国"))
+    }
+
+    @Test
+    fun defaultProcessorMasksTheFoundWord() {
+        val tree = WordTree().addWords("红领巾")
+        val found = tree.matchWord("我爱红领巾")!!
+        val processor = object : SensitiveProcessor {}
+        assertEquals("***", processor.process(found))
     }
 }
 
