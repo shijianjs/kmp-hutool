@@ -20,7 +20,7 @@ title: core
 | `core.codec` | `Base64`、`PunyCode`、`Morse`、`Base85` |
 | `core.convert` | `Convert`、`BasicType`、`NumberWordFormatter`、`NumberChineseFormatter`、`NumberWithFormat`、`Converter`、`TypeConverter`、`CastUtil`、`ConvertException` |
 | `core.comparator` | `CompareUtil`、`VersionComparator` |
-| `core.date` | `DateUnit`、`DateField`、`Month`、`Week`、`Quarter`、`Zodiac`、`DatePattern`、`DateBetween`、`StopWatch`、`BetweenFormatter`、`GroupTimeInterval`、`TimeInterval`、`YearQuarter`、`ChineseDate`，以及 `date.chinese` |
+| `core.date` | `DateUnit`、`DateField`、`Month`、`Week`、`Quarter`、`Zodiac`、`DatePattern`、`DateBetween`、`StopWatch`、`BetweenFormatter`、`GroupTimeInterval`、`TimeInterval`、`YearQuarter`、`ChineseDate`、`TimeZoneUtil`、`ZoneUtil`、`DateBasic`，以及 `date.chinese` |
 | `core.math` | `MathUtil`、`CRC16Checksum`、`DataSize` |
 | `core.crypto` | `Vigenere`、`CipherMode`、`Mode`、`Padding`、`CryptoException`，以及算法名枚举（`DigestAlgorithm`、`HmacAlgorithm`、`AsymmetricAlgorithm`、`SignAlgorithm`、`SymmetricAlgorithm`） |
 | `core.bloomfilter` | `BloomFilter`、`BitMapBloomFilter`、`BloomFilterUtil`、位图与十个哈希过滤器 |
@@ -29,7 +29,8 @@ title: core
 | `core.thread.lock` | `NoLock`、`NoReadWriteLock` |
 | `core.json` | `JSONString`、`JSONBeanParser`、`JSONException`、`JSONStrFormatter`（JSON 对象模型尚未移植） |
 | `core.jwt` | `JWTException`、`JWTSigner`、`NoneJWTSigner`、`AlgorithmUtil`（Claims 容器待 JSON 模型完成后补齐） |
-| `core.cache` | `CacheListener` |
+| `core.cache` | `CacheListener`、`Cache`、`CacheObj`、`AbstractCache`、`FIFOCache`、`LFUCache`、`LRUCache`、`NoCache`、`CacheUtil` |
+| `core.cron` | `CronException`、`CronConfig`、`Task`、`CronTask`、`Part`、七个 `PartMatcher` 实现、`PartParser`、`PatternParser`、`CronPattern`、`CronPatternBuilder` |
 | `core.dfa` | `WordTree`、`FoundWord`、`StopChar`、`SensitiveProcessor` |
 
 每个文件的 KDoc 都带 `@hutool <上游全限定类名>` 标签，覆盖率脚本按标签计数，一个类只算一次。合并门面带两个标签（`StrUtil` 覆盖 `CharSequenceUtil` 与 `StrUtil`，`CollUtil` 覆盖 `CollUtil` 与 `CollectionUtil`）。
@@ -78,7 +79,47 @@ lunar.getTerm()                      // 节气，当天没有节气时为空串
 BetweenFormatter(90_000L, BetweenFormatter.Level.SECOND).format() // 1分30秒
 ```
 
-`DateUtil` 中格式化/解析部分计划以扩展函数形式提供在 `LocalDate`、`LocalDateTime`、`Instant` 上；需要 pattern 引擎时留在 `kmp-hutool-core`，不再引入格式化库。
+`TimeZoneUtil` 通过 `kotlinx.datetime.TimeZone` 解析 ID，未知 ID 回退 GMT；`ZoneUtil` 保留
+Hutool 的 `toTimeZone`/`toZoneId` 入口，但在 common 只有一种时区类型，所以是恒等转换。
+`DateBasic` 用 Kotlin 属性暴露 `pattern`、`timeZone`、`localeTag`；`localeTag` 是 `zh-CN` 这样的
+IETF 语言标签，因为 `java.util.Locale` 在 common 没有对应类型。
+
+## 缓存
+
+`hutool-cache` 实现在 `core.cache`，使用 Kotlin 属性与 `() -> V` 取值函数。所有缓存都是
+**单线程、非线程安全**的；多个协程共享时请在外层加平台锁或 actor。
+
+```kotlin
+val cache = CacheUtil.newLRUCache<String, String>(3, 1_000L) // 容量 3，超时 1 秒
+cache.put("a", "A")
+cache.get("a", true)                  // true 表示更新 LRU 的最后访问顺序
+cache.get("missing") { "computed" }   // 取值函数的结果会被缓存
+cache.size()
+```
+
+FIFO 淘汰最早插入的项，LFU 淘汰访问次数最少的项，LRU 淘汰最久未访问的项，`NoCache` 只在当前
+调用内保留值。`CacheListener` 会收到 `onRemove`/`onClear` 回调。`WeakCache` 仍排除，因为 common
+Kotlin 没有弱引用。
+
+## Cron
+
+表达式引擎是纯 common 实现。5 段表示 `分 时 日 月 周`，6 段增加秒，7 段再增加年；只有
+`matchSecond` 为 true 时才匹配秒。
+
+```kotlin
+val pattern = CronPattern("*/5 9-17 * * mon-fri")   // 工作日 9:00-17:59，每 5 分钟
+pattern.match(LocalDateTime(2026, 11, 17, 10, 5), isMatchSecond = false)
+
+CronPatternBuilder.of()
+    .setRange(Part.MINUTE, 0, 30)
+    .setValues(Part.HOUR, 8, 12)
+    .build()                                       // "0-30 8,12 * * *"
+```
+
+`Task` 是 `fun interface`；`CronTask` 把它与 id、`CronPattern` 组合。上游基于 `Calendar` 的
+`nextMatchAfter` 没有移植：调度器自己推进时钟并调用 `match`，这样引擎不依赖
+`java.util.Calendar`/`TimeZone`。
+
 
 ## 布隆过滤器
 
@@ -100,8 +141,8 @@ val custom = SDBMFilter(1_000)         // 单独使用 SDBM 哈希过滤器
 | JSON | `hutool-json` | 契约与字符串格式化在 core；对象模型与解析请用 `kotlinx-serialization-json` |
 | HTTP | `hutool-http` | 不打进本库；用 Ktor |
 | 加密 | `hutool-crypto` | 算法名与异常在 core；摘要/加解密引擎仍交给平台 |
-| 日志 | `hutool-log` | 不打进本库 |
-| 数据库、POI、Servlet、Cron、Cache | `hutool-db`、`hutool-poi` 等 | 排除，逐模块理由见[覆盖率页](../guide/coverage.md) |
+| 日志 | `hutool-log` | 不打进本库；在平台日志之上用 `kotlin-logging` |
+| 数据库、POI、Servlet | `hutool-db`、`hutool-poi`、`hutool-extra` | 排除，逐模块理由见[覆盖率页](../guide/coverage.md) |
 
 规则一致：核心不会替使用方加任何依赖。
 

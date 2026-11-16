@@ -5,27 +5,31 @@
 在 `commonMain` 里尽可能多地实现 Hutool 的可移植功能，Kotlin 化改写而非照抄；提供中英双语文档站（为主）、可跳转的 demo 与 API 文档（GitHub Pages）；输出功能清单与自动计算的覆盖率（含未覆盖理由）；注明本项目 MIT 与上游 Mulan PSL v2 许可。
 
 - 总计：1557
-- 已完成：336
-- 明确不做：1157
-- 待完成：64
+- 已完成：362
+- 明确不做：1171
+- 待完成：24
 
 详细清单：[coverage.md](docs/development/coverage.md)（由 `scripts/hutool_coverage.py` 生成，不在本文件复制明细）。
 
 ### 当前待办
 
-- [ ] 剩余 64 项均受平台能力限制，需按模块分别评估，不能继续机械移植：
-  - `hutool-core` 23 项：`TimeZone`/`Locale`（`DateBasic`、`TimeZoneUtil`、`ZoneUtil`）、流式迭代器（`NodeListIter`、`SpliteratorUtil`、`TransSpliterator`）、`WeakReference`/`ClassLoader`/`ServiceLoader`/JNDI/`System.getProperties`（`InternUtil`、`ReferenceUtil`、`JdkUtil`、`ServiceLoaderUtil`、`JNDIUtil`、`SystemPropsUtil`）、JVM 管理/反射（`Pid`、`CheckedUtil`、`DefaultCloneable`）、`java.util.TreeMap`/`Pattern`/`Console`（`CaseInsensitiveTreeMap`、`PatternPool`、`RegexPool`、`Console`）。其中 `RegexPool`/`PatternPool` 只差常量抽取，可单独排期。
-  - `hutool-cron` 12 项：`CronPattern`、`PatternMatcher`、`Part` 依赖 `java.util.Calendar/TimeZone`（覆盖率归为 excluded），因此 12 个依赖它们的 parser/matcher/task 类无法独立完成；要移植需先用 `kotlinx-datetime` 重建调度模型。
-  - `hutool-json` 11 项：需要先实现 `JSONObject`/`JSONArray`/`JSONParser` 这一整层；当前只移植了 `JSONString`、`JSONBeanParser`、`JSONException`、`JSONStrFormatter`。
-  - `hutool-cache` 6 项：`Cache`/`CacheObj`/`ReentrantCache` 依赖锁与 `LinkedHashMap` 访问序；`WeakCache` 还依赖 `WeakReference`。可考虑用 `kotlinx-atomicfu` + 自建 LRU 链表重做，但属于新设计而非移植。
-  - `hutool-crypto` 4 项：`SM3`/`TOTP`/`Argon2`/`SignUtil` 依赖 `MessageDigest`/`Mac`/`Signature`，需引入 KMP 加密后端（如 `cryptography-kotlin`）或纯 Kotlin 实现。
-  - `hutool-jwt` 3 项：`JWTHeader`/`JWTPayload`/`JWTUtil` 依赖 JSON 与 Base64；JSON 层完成后可补。
-  - `hutool-setting` 3 项：`PropsUtil` 依赖 `java.util.Properties`；`GlobalProfile`/`SettingUtil` 依赖文件与编码。
-  - `hutool-log` 2 项：`Log`/`StaticLog` 依赖运行时获取调用者（`CallerUtil`）和可替换的日志后端。
+- [ ] `hutool-json` 11 项：`JSONObjectIter`、`JSONParser`、`JSONSupport`、`serialize/{JSONArraySerializer,JSONDeserializer,JSONObjectSerializer,JSONSerializer}`、`xml/{JSONXMLParser,JSONXMLSerializer}`、`XML`、`XMLTokener`。需要先建立 `JSONObject`/`JSONArray`/`JSONTokener` 对象模型；可复用 `kotlinx-serialization-json` 做语法后端，但动态 Map 风格 API 仍是自建 facade。
+- [ ] `hutool-crypto` 4 项：`SM3`、`TOTP`、`Argon2`、`SignUtil`，依赖 `MessageDigest`/`Mac`/`Signature`。按“门面 + 可选后端”设计，纯 Kotlin 可实现的先做，平台 API 用 expect/actual。
+- [ ] `hutool-core` 3 项：`CityHash`（纯 Kotlin 算法，可移植）、`PatternPool`/`RegexPool`（常量表，`java.util.regex.Pattern` 换 `kotlin.text.Regex`）。
+- [ ] `hutool-jwt` 3 项：`JWTHeader`、`JWTPayload`、`JWTUtil`，依赖 JSON 层与 Base64，JSON 完成后补。
+- [ ] `hutool-setting` 3 项：`PropsUtil`、`GlobalProfile`、`SettingUtil`，依赖文件读取；需先决定是否新建可选 `kmp-hutool-setting` 模块并引入 okio。
 - [ ] 每批新增类后跑 `:kmp-hutool-core:jvmTest`、`:kmp-hutool-core:jsTest`、`:kmp-hutool-core:wasmJsTest`，并刷新覆盖率
 - [ ] 重建发布流水线：`release.yml` 与 `hub-release.py` 已删除（旧的按模块 `-kt.N` 模型与单版本不符），需要按当前单版本模型重新设计
 - [ ] 首次发布前补全 POM 描述与仓库 Secrets（签名密钥）
-- [ ] 文档站内容随覆盖率增长补充示例（当前示例集中在 core 的已移植类）
+- [ ] 文档站内容随覆盖率增长补充示例（cache/date/cron 已补，剩余随 json/crypto/setting 推进）
+
+### 已完成的关键批次
+
+- core 基础、text/convert/io/map/collection/lang、DFA、Bloom、中文日期、JWT 契约、JSON 格式化
+- date：`TimeZoneUtil`、`ZoneUtil`、`DateBasic`（`kotlinx-datetime`，`localeTag` 代替 `Locale`）
+- cache：`Cache`/`CacheObj`/`AbstractCache`/FIFO/LFU/LRU/NoCache/`CacheUtil`，单线程语义已写入 KDoc
+- cron：支撑层 `Part`/`CronPattern`/`PatternMatcher` 与 12 个任务/解析/匹配类，5/6/7 段表达式全部可解析匹配
+- 排除项：log、JVM 强相关 core、`WeakCache` 等 20 类已写入 `scripts/hutool-exclusions.json` 并逐条给出理由
 
 ### 限制与约束
 

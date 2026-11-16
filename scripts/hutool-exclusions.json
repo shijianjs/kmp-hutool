@@ -59,6 +59,26 @@
     "cn.hutool.core.util.ReflectUtil": "The reflection toolkit itself.",
     "cn.hutool.core.util.RuntimeUtil": "Starts processes with Runtime/ProcessBuilder.",
     "cn.hutool.core.util.TypeUtil": "Works on java.lang.reflect.Type and generic signatures.",
-    "cn.hutool.core.util.XmlUtil": "javax.xml DOM/SAX parsers; no XML parser in the standard library."
+    "cn.hutool.core.util.XmlUtil": "javax.xml DOM/SAX parsers; no XML parser in the standard library.",
+    "cn.hutool.core.clone.DefaultCloneable": "Its default clone0() invokes Object.clone() by reflection; commonMain has neither clone nor reflective invocation.",
+    "cn.hutool.core.collection.NodeListIter": "Wraps org.w3c.dom.NodeList, a JVM/Java-SE API with no common counterpart.",
+    "cn.hutool.core.collection.SpliteratorUtil": "Operates on java.util.Spliterator and java.util.stream; neither exists in commonMain.",
+    "cn.hutool.core.collection.TransSpliterator": "Transforms java.util.Spliterator instances, a java.util.stream API.",
+    "cn.hutool.core.exceptions.CheckedUtil": "Adapts checked exceptions through java.lang.reflect and Hutool's JVM functional-interface hierarchy.",
+    "cn.hutool.core.lang.Console": "Reads/writes java.io.Console and ANSI terminal state; a KMP CLI needs a platform logging/output backend.",
+    "cn.hutool.core.lang.generator.ObjectGenerator": "Instantiates objects reflectively from a Class, which commonMain does not expose.",
+    "cn.hutool.core.lang.intern.InternUtil": "Chooses between JdkStringInterner and WeakInterner, both JVM-only; use an explicit Interner implementation instead.",
+    "cn.hutool.core.lang.intern.JdkStringInterner": "Calls String.intern(), a JVM-specific operation.",
+    "cn.hutool.core.lang.intern.WeakInterner": "Uses java.lang.ref.WeakReference and a JVM reference queue.",
+    "cn.hutool.core.lang.Pid": "Reads the JVM process id through RuntimeMXBean/ProcessHandle.",
+    "cn.hutool.core.map.CaseInsensitiveTreeMap": "Backed by java.util.TreeMap and a String CASE_INSENSITIVE_ORDER comparator; Kotlin common has no TreeMap.",
+    "cn.hutool.core.util.JdkUtil": "Detects JVM version and runtime properties; there is no JVM in commonMain.",
+    "cn.hutool.core.util.JNDIUtil": "Uses javax.naming JNDI lookups, a Java SE API.",
+    "cn.hutool.core.util.ReferenceUtil": "Creates soft/weak/phantom java.lang.ref references.",
+    "cn.hutool.core.util.ServiceLoaderUtil": "Uses java.util.ServiceLoader and class loaders.",
+    "cn.hutool.core.util.SystemPropsUtil": "Reads java.lang.System properties and environment through JVM system calls.",
+    "cn.hutool.cache.impl.WeakCache": "Stores values through java.lang.ref.WeakReference; common Kotlin has no weak-reference API.",
+    "cn.hutool.log.Log": "Hutool's logging facade resolves callers and pluggable JVM backends; KMP projects use kotlin-logging instead, so this facade is intentionally out of scope.",
+    "cn.hutool.log.StaticLog": "Depends on CallerUtil and the JVM LogFactory; replaced by kotlin-logging's KLogger."
   }
 }

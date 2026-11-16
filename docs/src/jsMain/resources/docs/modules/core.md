@@ -21,7 +21,7 @@ The only published module. Everything below lives in `commonMain`, so it compile
 | `core.codec` | `Base64`, `PunyCode`, `Morse`, `Base85` |
 | `core.convert` | `Convert`, `BasicType`, `NumberWordFormatter`, `NumberChineseFormatter`, `NumberWithFormat`, `Converter`, `TypeConverter`, `CastUtil`, `ConvertException` |
 | `core.comparator` | `CompareUtil`, `VersionComparator` |
-| `core.date` | `DateUnit`, `DateField`, `Month`, `Week`, `Quarter`, `Zodiac`, `DatePattern`, `DateBetween`, `StopWatch`, `BetweenFormatter`, `GroupTimeInterval`, `TimeInterval`, `YearQuarter`, `ChineseDate`, plus `date.chinese` |
+| `core.date` | `DateUnit`, `DateField`, `Month`, `Week`, `Quarter`, `Zodiac`, `DatePattern`, `DateBetween`, `StopWatch`, `BetweenFormatter`, `GroupTimeInterval`, `TimeInterval`, `YearQuarter`, `ChineseDate`, `TimeZoneUtil`, `ZoneUtil`, `DateBasic`, plus `date.chinese` |
 | `core.math` | `MathUtil`, `CRC16Checksum`, `DataSize` |
 | `core.crypto` | `Vigenere`, `CipherMode`, `Mode`, `Padding`, `CryptoException`, algorithm name enums (`DigestAlgorithm`, `HmacAlgorithm`, `AsymmetricAlgorithm`, `SignAlgorithm`, `SymmetricAlgorithm`) |
 | `core.bloomfilter` | `BloomFilter`, `BitMapBloomFilter`, `BloomFilterUtil`, bit maps and the ten hash filters |
@@ -30,7 +30,8 @@ The only published module. Everything below lives in `commonMain`, so it compile
 | `core.thread.lock` | `NoLock`, `NoReadWriteLock` |
 | `core.json` | `JSONString`, `JSONBeanParser`, `JSONException`, `JSONStrFormatter` (the JSON object model is not ported yet) |
 | `core.jwt` | `JWTException`, `JWTSigner`, `NoneJWTSigner`, `AlgorithmUtil` (claim containers await the JSON model) |
-| `core.cache` | `CacheListener` |
+| `core.cache` | `CacheListener`, `Cache`, `CacheObj`, `AbstractCache`, `FIFOCache`, `LFUCache`, `LRUCache`, `NoCache`, `CacheUtil` |
+| `core.cron` | `CronException`, `CronConfig`, `Task`, `CronTask`, `Part`, the seven `PartMatcher` implementations, `PartParser`, `PatternParser`, `CronPattern`, `CronPatternBuilder` |
 | `core.dfa` | `WordTree`, `FoundWord`, `StopChar`, `SensitiveProcessor` |
 
 Each file carries a `@hutool <fully-qualified upstream class>` KDoc tag; that tag is what the
@@ -87,9 +88,49 @@ lunar.getTerm()                      // 节气, empty when the day has none
 BetweenFormatter(90_000L, BetweenFormatter.Level.SECOND).format() // 1分30秒
 ```
 
-The formatting/parsing part of `DateUtil` is planned as extension functions on `LocalDate`,
-`LocalDateTime` and `Instant`; when a helper needs a pattern engine it will stay in
-`kmp-hutool-core` rather than pulling in a formatting library.
+`TimeZoneUtil` resolves an ID through `kotlinx.datetime.TimeZone`, falls back to GMT for unknown IDs,
+and `ZoneUtil` keeps Hutool's `toTimeZone`/`toZoneId` entry points as identity conversions because
+common code has a single zone type. `DateBasic` exposes `pattern`, `timeZone` and `localeTag` as Kotlin
+properties; `localeTag` is an IETF language tag such as `zh-CN`, since `java.util.Locale` has no common
+counterpart.
+
+## Cache
+
+`hutool-cache` is implemented in `core.cache` with Kotlin properties and a `() -> V` value supplier.
+All caches are **single-threaded and not thread-safe**; use a platform lock or an actor around them
+when several coroutines share one instance.
+
+```kotlin
+val cache = CacheUtil.newLRUCache<String, String>(3, 1_000L) // capacity 3, 1s timeout
+cache.put("a", "A")
+cache.get("a", true)                  // true = update last-access for LRU ordering
+cache.get("missing") { "computed" }   // supplier result is cached
+cache.size()
+```
+
+FIFO evicts the earliest inserted entry, LFU the least frequently used, LRU the least recently used,
+and `NoCache` only keeps the value for the current call. A `CacheListener` receives
+`onRemove`/`onClear` callbacks. `WeakCache` stays excluded because common Kotlin has no weak references.
+
+## Cron
+
+The cron expression engine is pure common code. Five fields mean `minute hour day month weekday`; six
+fields add seconds; seven fields add a year. Seconds are only matched when `matchSecond` is true.
+
+```kotlin
+val pattern = CronPattern("*/5 9-17 * * mon-fri")   // every 5 min, 09:00-17:59, weekdays
+pattern.match(LocalDateTime(2026, 11, 17, 10, 5), isMatchSecond = false)
+
+CronPatternBuilder.of()
+    .setRange(Part.MINUTE, 0, 30)
+    .setValues(Part.HOUR, 8, 12)
+    .build()                                       // "0-30 8,12 * * *"
+```
+
+`Task` is a `fun interface`; `CronTask` pairs it with an id and a `CronPattern`. Upstream's
+`Calendar`-based `nextMatchAfter` is not ported: a scheduler advances its own clock and calls
+`match`, which keeps the engine free of `java.util.Calendar`/`TimeZone`.
+
 
 ## Bloom filters
 
@@ -114,8 +155,8 @@ val custom = SDBMFilter(1_000)         // one filter with the SDBM hash
 | JSON | `hutool-json` | contracts and the string formatter are in core; use `kotlinx-serialization-json` for the object model and parsing |
 | HTTP | `hutool-http` | not bundled; use Ktor |
 | Crypto | `hutool-crypto` | algorithm names and exceptions are in core; digest/cipher engines stay platform-specific |
-| Logging | `hutool-log` | not bundled |
-| Database, POI, Servlet, Cron, Cache | `hutool-db`, `hutool-poi`, ... | excluded; see the [coverage page](../guide/coverage.md) for the per-module reason |
+| Logging | `hutool-log` | not bundled; use `kotlin-logging` on top of your platform logger |
+| Database, POI, Servlet | `hutool-db`, `hutool-poi`, `hutool-extra` | excluded; see the [coverage page](../guide/coverage.md) for the per-module reason |
 
 The rule is the same everywhere: the core never adds a dependency on your behalf.
 
