@@ -9,7 +9,7 @@ package io.github.shijianjs.kmphutool.core.map
  *
  * @hutool cn.hutool.core.map.CaseInsensitiveMap
  */
-class CaseInsensitiveMap<V>(initial: Map<String, V>? = null) : MutableMap<String, V> {
+open class CaseInsensitiveMap<V>(initial: Map<String, V>? = null) : MutableMap<String, V> {
     private val map = LinkedHashMap<String, V>()
     private val originalKeys = LinkedHashMap<String, String>()
 
