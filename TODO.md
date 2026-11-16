@@ -13,9 +13,16 @@
 
 ### 当前待办
 
-- [ ] 继续补 `hutool-core` 剩余可移植类（按包分批：`date`、`map`、`collection`、`text`、`util`、`comparator`、`codec`）
-- [ ] 每批新增类后跑 `:kmp-hutool-core:jvmTest` 与 `compileKotlinJs`，并刷新覆盖率
-- [ ] 补充 `date` 区域：`DateUtil` 可移植部分（格式化、解析、偏移）以 `kotlinx-datetime` 扩展函数实现
+- [ ] 剩余 64 项均受平台能力限制，需按模块分别评估，不能继续机械移植：
+  - `hutool-core` 23 项：`TimeZone`/`Locale`（`DateBasic`、`TimeZoneUtil`、`ZoneUtil`）、流式迭代器（`NodeListIter`、`SpliteratorUtil`、`TransSpliterator`）、`WeakReference`/`ClassLoader`/`ServiceLoader`/JNDI/`System.getProperties`（`InternUtil`、`ReferenceUtil`、`JdkUtil`、`ServiceLoaderUtil`、`JNDIUtil`、`SystemPropsUtil`）、JVM 管理/反射（`Pid`、`CheckedUtil`、`DefaultCloneable`）、`java.util.TreeMap`/`Pattern`/`Console`（`CaseInsensitiveTreeMap`、`PatternPool`、`RegexPool`、`Console`）。其中 `RegexPool`/`PatternPool` 只差常量抽取，可单独排期。
+  - `hutool-cron` 12 项：`CronPattern`、`PatternMatcher`、`Part` 依赖 `java.util.Calendar/TimeZone`（覆盖率归为 excluded），因此 12 个依赖它们的 parser/matcher/task 类无法独立完成；要移植需先用 `kotlinx-datetime` 重建调度模型。
+  - `hutool-json` 11 项：需要先实现 `JSONObject`/`JSONArray`/`JSONParser` 这一整层；当前只移植了 `JSONString`、`JSONBeanParser`、`JSONException`、`JSONStrFormatter`。
+  - `hutool-cache` 6 项：`Cache`/`CacheObj`/`ReentrantCache` 依赖锁与 `LinkedHashMap` 访问序；`WeakCache` 还依赖 `WeakReference`。可考虑用 `kotlinx-atomicfu` + 自建 LRU 链表重做，但属于新设计而非移植。
+  - `hutool-crypto` 4 项：`SM3`/`TOTP`/`Argon2`/`SignUtil` 依赖 `MessageDigest`/`Mac`/`Signature`，需引入 KMP 加密后端（如 `cryptography-kotlin`）或纯 Kotlin 实现。
+  - `hutool-jwt` 3 项：`JWTHeader`/`JWTPayload`/`JWTUtil` 依赖 JSON 与 Base64；JSON 层完成后可补。
+  - `hutool-setting` 3 项：`PropsUtil` 依赖 `java.util.Properties`；`GlobalProfile`/`SettingUtil` 依赖文件与编码。
+  - `hutool-log` 2 项：`Log`/`StaticLog` 依赖运行时获取调用者（`CallerUtil`）和可替换的日志后端。
+- [ ] 每批新增类后跑 `:kmp-hutool-core:jvmTest`、`:kmp-hutool-core:jsTest`、`:kmp-hutool-core:wasmJsTest`，并刷新覆盖率
 - [ ] 重建发布流水线：`release.yml` 与 `hub-release.py` 已删除（旧的按模块 `-kt.N` 模型与单版本不符），需要按当前单版本模型重新设计
 - [ ] 首次发布前补全 POM 描述与仓库 Secrets（签名密钥）
 - [ ] 文档站内容随覆盖率增长补充示例（当前示例集中在 core 的已移植类）

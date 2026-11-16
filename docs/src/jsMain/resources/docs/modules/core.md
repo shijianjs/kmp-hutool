@@ -14,15 +14,24 @@ The only published module. Everything below lives in `commonMain`, so it compile
 | --- | --- |
 | `core.exceptions` | `UtilException`, `ValidateException` |
 | `core.text` | `StrPool`, `StrFormatter`, `StrSplitter`, `StrJoiner`, `StrBuilder`, `UnicodeUtil` |
-| `core.util` | `CharUtil`, `StrUtil`, `EscapeUtil`, `ObjectUtil`, `ArrayUtil`, `NumberUtil`, `RandomUtil`, `HexUtil`, `ReUtil`, `IdUtil` (+ `Snowflake`), `PageUtil`, `EnumUtil`, `DesensitizedUtil`, `PhoneUtil`, `CreditCodeUtil`, `IdcardUtil` |
-| `core.collection` | `ListUtil`, `IterUtil`, `CollUtil`, `Partition` |
-| `core.map` | `MapUtil`, `CaseInsensitiveMap` |
-| `core.lang` | `Dict`, `Validator`, `Assert`, `Range`, `Holder`, `MutableObj`, `WeightRandom`, `Tuple` |
-| `core.codec` | `Base64` |
-| `core.convert` | `Convert`, `BasicType` |
+| `core.util` | `CharUtil`, `StrUtil`, `EscapeUtil`, `ObjectUtil`, `ArrayUtil`, `NumberUtil`, `RandomUtil`, `HexUtil`, `ReUtil`, `IdUtil` (+ `Snowflake`), `HashUtil`, `PageUtil`, `EnumUtil`, `DesensitizedUtil`, `PhoneUtil`, `CreditCodeUtil`, `IdcardUtil`, `ObjUtil` |
+| `core.collection` | `ListUtil`, `IterUtil`, `CollUtil`, `Partition`, `RandomAccessPartition`, `RandomAccessAvgPartition` |
+| `core.map` | `MapUtil`, `CaseInsensitiveMap`, `TableMap`, `MapProxy` |
+| `core.lang` | `Dict`, `Validator`, `Assert`, `Range`, `Holder`, `MutableObj`, `WeightRandom`, `Tuple`, `Opt`, `ConsoleTable`, `Pair` |
+| `core.codec` | `Base64`, `PunyCode`, `Morse`, `Base85` |
+| `core.convert` | `Convert`, `BasicType`, `NumberWordFormatter`, `NumberChineseFormatter`, `NumberWithFormat`, `Converter`, `TypeConverter`, `CastUtil`, `ConvertException` |
 | `core.comparator` | `CompareUtil`, `VersionComparator` |
-| `core.date` | `StopWatch` |
-| `core.math` | `MathUtil` |
+| `core.date` | `DateUnit`, `DateField`, `Month`, `Week`, `Quarter`, `Zodiac`, `DatePattern`, `DateBetween`, `StopWatch`, `BetweenFormatter`, `GroupTimeInterval`, `TimeInterval`, `YearQuarter`, `ChineseDate`, plus `date.chinese` |
+| `core.math` | `MathUtil`, `CRC16Checksum`, `DataSize` |
+| `core.crypto` | `Vigenere`, `CipherMode`, `Mode`, `Padding`, `CryptoException`, algorithm name enums (`DigestAlgorithm`, `HmacAlgorithm`, `AsymmetricAlgorithm`, `SignAlgorithm`, `SymmetricAlgorithm`) |
+| `core.bloomfilter` | `BloomFilter`, `BitMapBloomFilter`, `BloomFilterUtil`, bit maps and the ten hash filters |
+| `core.io` | `FastByteBuffer`, `FastStringWriter`, `FastByteArrayOutputStream`, `NullOutputStream`, `StreamProgress`, `LineHandler`, `IORuntimeException` |
+| `core.setting` | `GroupedMap`, `GroupedSet`, `SettingRuntimeException` |
+| `core.thread.lock` | `NoLock`, `NoReadWriteLock` |
+| `core.json` | `JSONString`, `JSONBeanParser`, `JSONException`, `JSONStrFormatter` (the JSON object model is not ported yet) |
+| `core.jwt` | `JWTException`, `JWTSigner`, `NoneJWTSigner`, `AlgorithmUtil` (claim containers await the JSON model) |
+| `core.cache` | `CacheListener` |
+| `core.dfa` | `WordTree`, `FoundWord`, `StopChar`, `SensitiveProcessor` |
 
 Each file carries a `@hutool <fully-qualified upstream class>` KDoc tag; that tag is what the
 coverage script reads, so a ported class is counted exactly once. Merged facades carry two tags
@@ -82,13 +91,29 @@ The formatting/parsing part of `DateUtil` is planned as extension functions on `
 `LocalDateTime` and `Instant`; when a helper needs a pattern engine it will stay in
 `kmp-hutool-core` rather than pulling in a formatting library.
 
+## Bloom filters
+
+`hutool-bloomFilter` is portable as a whole, so the bitmap filters live in `core.bloomfilter`:
+`BitMapBloomFilter` combines five hash filters, `BloomFilterUtil.createBitMap` is the factory,
+and every `AbstractFilter` subclass is usable on its own. `BitSetBloomFilter` is the only class
+left out, because `java.util.BitSet` has no common counterpart.
+
+```kotlin
+val filter = BitMapBloomFilter(5)      // m = 5 → 8 Mbit per filter
+filter.add("kmp-hutool")               // true, first insertion
+filter.contains("kmp-hutool")          // true
+filter.add("kmp-hutool")               // false, already present
+
+val custom = SDBMFilter(1_000)         // one filter with the SDBM hash
+```
+
 ## Optional dependencies for larger areas
 
 | Area | Upstream module | What this port does |
 | --- | --- | --- |
-| JSON | `hutool-json` | not bundled; use `kotlinx-serialization-json` and the `core.convert` helpers |
+| JSON | `hutool-json` | contracts and the string formatter are in core; use `kotlinx-serialization-json` for the object model and parsing |
 | HTTP | `hutool-http` | not bundled; use Ktor |
-| Crypto | `hutool-crypto` | not bundled; use platform APIs or a KMP crypto library |
+| Crypto | `hutool-crypto` | algorithm names and exceptions are in core; digest/cipher engines stay platform-specific |
 | Logging | `hutool-log` | not bundled |
 | Database, POI, Servlet, Cron, Cache | `hutool-db`, `hutool-poi`, ... | excluded; see the [coverage page](../guide/coverage.md) for the per-module reason |
 

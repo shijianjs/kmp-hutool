@@ -1,5 +1,6 @@
 package io.github.shijianjs.kmphutool.demo
 
+import io.github.shijianjs.kmphutool.core.bloomfilter.BitMapBloomFilter
 import io.github.shijianjs.kmphutool.core.codec.Base64
 import io.github.shijianjs.kmphutool.core.collection.CollUtil
 import io.github.shijianjs.kmphutool.core.lang.Dict
@@ -46,6 +47,8 @@ private fun render() {
     root.appendChild(collectionSection())
     root.appendChild(codeSection())
     root.appendChild(chinaSection())
+    root.appendChild(dateSection())
+    root.appendChild(bloomSection())
     root.appendChild(footer())
 }
 
@@ -140,6 +143,21 @@ private fun dateSection(): HTMLElement {
     )
     return section("Dates, lunar calendar, money", rows)
 }
+
+private fun bloomSection(): HTMLElement {
+    val filter = BitMapBloomFilter(5)
+    val firstAdd = filter.add("kmp-hutool")
+    val contains = filter.contains("kmp-hutool")
+    val secondAdd = filter.add("kmp-hutool")
+    val rows = listOf(
+        "BloomFilter.add (first)" to firstAdd.toString(),
+        "BloomFilter.contains" to contains.toString(),
+        "BloomFilter.add (again)" to secondAdd.toString(),
+    )
+    return section(label("Bloom filter", "布隆过滤器"), rows)
+}
+
+private fun label(english: String, chinese: String): String = if (locale == Locale.ZH) chinese else english
 
 private fun versionComparison(): String {
     val comparator = VersionComparator()
