@@ -22,7 +22,7 @@ title: core
 | `core.comparator` | `CompareUtil`、`VersionComparator` |
 | `core.date` | `DateUnit`、`DateField`、`Month`、`Week`、`Quarter`、`Zodiac`、`DatePattern`、`DateBetween`、`StopWatch`、`BetweenFormatter`、`GroupTimeInterval`、`TimeInterval`、`YearQuarter`、`ChineseDate`、`TimeZoneUtil`、`ZoneUtil`、`DateBasic`，以及 `date.chinese` |
 | `core.math` | `MathUtil`、`CRC16Checksum`、`DataSize` |
-| `core.crypto` | `Vigenere`、`CipherMode`、`Mode`、`Padding`、`CryptoException`，以及算法名枚举（`DigestAlgorithm`、`HmacAlgorithm`、`AsymmetricAlgorithm`、`SignAlgorithm`、`SymmetricAlgorithm`） |
+| `core.crypto` | `Vigenere`、`CipherMode`、`Mode`、`Padding`、`CryptoException`、算法名枚举（`DigestAlgorithm`、`HmacAlgorithm`、`AsymmetricAlgorithm`、`SignAlgorithm`、`SymmetricAlgorithm`），以及纯 Kotlin 的 `SM3`、`HOTP`、`TOTP` |
 | `core.bloomfilter` | `BloomFilter`、`BitMapBloomFilter`、`BloomFilterUtil`、位图与十个哈希过滤器 |
 | `core.io` | `FastByteBuffer`、`FastStringWriter`、`FastByteArrayOutputStream`、`NullOutputStream`、`StreamProgress`、`LineHandler`、`IORuntimeException` |
 | `core.setting` | `GroupedMap`、`GroupedSet`、`SettingRuntimeException` |
@@ -171,6 +171,22 @@ JWTValidator.of(parsed).validateDate(Instant.parse("2026-11-17T00:00:00Z"))
 `setExpiresAt`/`setNotBefore`/`setIssuedAt` 接收 `kotlinx.datetime.Instant`，内部按秒存储。
 `JWTUtil` 提供 `createToken(payload, signer)`、`parseToken`、`verify`；上游接收字节数组的
 便捷重载依赖其 HMAC 签名器工厂，这里有意不提供。
+
+## 摘要与一次性密码
+
+`SM3` 是纯 Kotlin 的国密摘要实现，`HOTP`/`TOTP` 分别实现 RFC 4226 与 RFC 6238，内置
+HMAC-SHA1。其他 HMAC/加解密算法仍需平台 provider。
+
+```kotlin
+SM3().digestHex("abc")
+    // 66C7F0F462EEEDD9D1F2D46BDC10E4E24167C4875CF2F7A2297DA02B8F4BA8E0
+
+val totp = TOTP(key = "12345678901234567890".encodeToByteArray()) // 6 位，30 秒步进
+totp.generate(Instant.parse("1970-01-01T00:00:59Z"))
+totp.validate(Instant.parse("1970-01-01T00:00:59Z"), 1, 287082)
+
+val secret = TOTP.generateGoogleSecretKey("alice@example.com", 20)
+```
 
 
 ## 布隆过滤器

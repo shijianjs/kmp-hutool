@@ -23,7 +23,7 @@ The only published module. Everything below lives in `commonMain`, so it compile
 | `core.comparator` | `CompareUtil`, `VersionComparator` |
 | `core.date` | `DateUnit`, `DateField`, `Month`, `Week`, `Quarter`, `Zodiac`, `DatePattern`, `DateBetween`, `StopWatch`, `BetweenFormatter`, `GroupTimeInterval`, `TimeInterval`, `YearQuarter`, `ChineseDate`, `TimeZoneUtil`, `ZoneUtil`, `DateBasic`, plus `date.chinese` |
 | `core.math` | `MathUtil`, `CRC16Checksum`, `DataSize` |
-| `core.crypto` | `Vigenere`, `CipherMode`, `Mode`, `Padding`, `CryptoException`, algorithm name enums (`DigestAlgorithm`, `HmacAlgorithm`, `AsymmetricAlgorithm`, `SignAlgorithm`, `SymmetricAlgorithm`) |
+| `core.crypto` | `Vigenere`, `CipherMode`, `Mode`, `Padding`, `CryptoException`, algorithm name enums (`DigestAlgorithm`, `HmacAlgorithm`, `AsymmetricAlgorithm`, `SignAlgorithm`, `SymmetricAlgorithm`), pure `SM3`, `HOTP`, `TOTP` |
 | `core.bloomfilter` | `BloomFilter`, `BitMapBloomFilter`, `BloomFilterUtil`, bit maps and the ten hash filters |
 | `core.io` | `FastByteBuffer`, `FastStringWriter`, `FastByteArrayOutputStream`, `NullOutputStream`, `StreamProgress`, `LineHandler`, `IORuntimeException` |
 | `core.setting` | `GroupedMap`, `GroupedSet`, `SettingRuntimeException` |
@@ -183,6 +183,22 @@ JWTValidator.of(parsed).validateDate(Instant.parse("2026-11-17T00:00:00Z"))
 `setExpiresAt`/`setNotBefore`/`setIssuedAt` accept `kotlinx.datetime.Instant` and store epoch
 seconds. `JWTUtil` offers `createToken(payload, signer)`, `parseToken` and `verify`; the byte-array
 overloads of upstream need its HMAC signer factory and are intentionally not included.
+
+## Hashes and one-time passwords
+
+`SM3` is a pure Kotlin implementation of the Chinese standard, and `HOTP`/`TOTP` implement RFC 4226
+and RFC 6238 with a built-in HMAC-SHA1. Other HMAC/cipher algorithms still need a platform provider.
+
+```kotlin
+SM3().digestHex("abc")
+    // 66C7F0F462EEEDD9D1F2D46BDC10E4E24167C4875CF2F7A2297DA02B8F4BA8E0
+
+val totp = TOTP(key = "12345678901234567890".encodeToByteArray()) // 6 digits, 30s step
+totp.generate(Instant.parse("1970-01-01T00:00:59Z"))
+totp.validate(Instant.parse("1970-01-01T00:00:59Z"), 1, 287082)
+
+val secret = TOTP.generateGoogleSecretKey("alice@example.com", 20)
+```
 
 
 ## Bloom filters
