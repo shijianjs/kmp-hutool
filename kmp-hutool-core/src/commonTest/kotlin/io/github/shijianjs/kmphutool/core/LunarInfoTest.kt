@@ -1,7 +1,10 @@
 package io.github.shijianjs.kmphutool.core
 
 import io.github.shijianjs.kmphutool.core.date.chinese.ChineseMonth
+import io.github.shijianjs.kmphutool.core.date.chinese.GanZhi
 import io.github.shijianjs.kmphutool.core.date.chinese.LunarInfo
+import io.github.shijianjs.kmphutool.core.date.chinese.SolarTerms
+import kotlinx.datetime.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -15,6 +18,15 @@ class LunarInfoTest {
         assertEquals(354, LunarInfo.yearDays(2024))
         assertEquals(29, LunarInfo.monthDays(2023, 1))
         assertTrue(ChineseMonth.isLeapMonth(2023, 2))
+    }
+
+    @Test
+    fun solarTermsAndStems() {
+        assertEquals("立春", SolarTerms.getTerm(2024, 2, 4))
+        assertEquals("立春", SolarTerms.getTerm(LocalDate(2024, 2, 4)))
+        assertEquals("", SolarTerms.getTerm(2024, 2, 3))
+        assertEquals("甲辰", GanZhi.getGanzhiOfYear(2024))
+        assertEquals("甲子", GanZhi.cyclicalm(0))
     }
 
     @Test
