@@ -29,7 +29,7 @@ The only published module. Everything below lives in `commonMain`, so it compile
 | `core.setting` | `GroupedMap`, `GroupedSet`, `SettingRuntimeException` |
 | `core.thread.lock` | `NoLock`, `NoReadWriteLock` |
 | `core.json` | `JSONString`, `JSONBeanParser`, `JSONException`, `JSONStrFormatter`, `JSON`, `JSONObject`, `JSONArray`, `JSONNull`, `JSONTokener`, `JSONParser`, `JSONObjectIter`, `JSONSupport`, the four serializer interfaces, `XML`, `XMLTokener`, `InternalJSONUtil`, and `xml/{JSONXMLParser,JSONXMLSerializer,ParseConfig}` |
-| `core.jwt` | `JWTException`, `JWTSigner`, `NoneJWTSigner`, `AlgorithmUtil` (claim containers await the JSON model) |
+| `core.jwt` | `JWTException`, `JWTSigner`, `NoneJWTSigner`, `AlgorithmUtil`, `Claims`, `RegisteredPayload`, `JWTHeader`, `JWTPayload`, `JWT`, `JWTValidator`, `JWTUtil` |
 | `core.cache` | `CacheListener`, `Cache`, `CacheObj`, `AbstractCache`, `FIFOCache`, `LFUCache`, `LRUCache`, `NoCache`, `CacheUtil` |
 | `core.cron` | `CronException`, `CronConfig`, `Task`, `CronTask`, `Part`, the seven `PartMatcher` implementations, `PartParser`, `PatternParser`, `CronPattern`, `CronPatternBuilder` |
 | `core.dfa` | `WordTree`, `FoundWord`, `StopChar`, `SensitiveProcessor` |
@@ -160,6 +160,29 @@ val json = XML.toJSONObject("""<root id="1"><item>a</item><item>2</item></root>"
 json.getJSONObject("root")?.getJSONArray("item")?.getStr(0) // a
 XML.toXml(json)                                             // <root>...</root>
 ```
+
+## JWT
+
+`JWT` builds `header.payload.signature` from `Claims` backed by the JSON model. The signature
+algorithm is a `JWTSigner`; HMAC/RSA implementations stay platform-specific, while `NoneJWTSigner`
+covers unsigned tokens.
+
+```kotlin
+val token = JWT.create()
+    .setPayload("sub", "user-1")
+    .setSigner(mySigner)          // any JWTSigner: sign/verify/getAlgorithm
+    .sign()
+
+val parsed = JWT.of(token)
+parsed.getPayload("sub")          // user-1
+parsed.verify(mySigner)
+
+JWTValidator.of(parsed).validateDate(Instant.parse("2026-11-17T00:00:00Z"))
+```
+
+`setExpiresAt`/`setNotBefore`/`setIssuedAt` accept `kotlinx.datetime.Instant` and store epoch
+seconds. `JWTUtil` offers `createToken(payload, signer)`, `parseToken` and `verify`; the byte-array
+overloads of upstream need its HMAC signer factory and are intentionally not included.
 
 
 ## Bloom filters

@@ -13,5 +13,9 @@ open class JWTException : RuntimeException {
     constructor(message: String?) : super(message)
     constructor(message: String?, cause: Throwable?) : super(message, cause)
     constructor(cause: Throwable?) : super(cause?.message, cause)
-    constructor(messageTemplate: CharSequence, vararg params: Any?) : super(StrUtil.format(messageTemplate, *params))
+
+    companion object {
+        fun format(messageTemplate: CharSequence, vararg params: Any?): JWTException =
+            JWTException(StrUtil.format(messageTemplate, *params))
+    }
 }

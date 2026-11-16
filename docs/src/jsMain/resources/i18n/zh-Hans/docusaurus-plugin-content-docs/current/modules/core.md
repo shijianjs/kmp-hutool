@@ -28,7 +28,7 @@ title: core
 | `core.setting` | `GroupedMap`、`GroupedSet`、`SettingRuntimeException` |
 | `core.thread.lock` | `NoLock`、`NoReadWriteLock` |
 | `core.json` | `JSONString`、`JSONBeanParser`、`JSONException`、`JSONStrFormatter`、`JSON`、`JSONObject`、`JSONArray`、`JSONNull`、`JSONTokener`、`JSONParser`、`JSONObjectIter`、`JSONSupport`、四个序列化接口、`XML`、`XMLTokener`、`InternalJSONUtil`，以及 `xml/{JSONXMLParser,JSONXMLSerializer,ParseConfig}` |
-| `core.jwt` | `JWTException`、`JWTSigner`、`NoneJWTSigner`、`AlgorithmUtil`（Claims 容器待 JSON 模型完成后补齐） |
+| `core.jwt` | `JWTException`、`JWTSigner`、`NoneJWTSigner`、`AlgorithmUtil`、`Claims`、`RegisteredPayload`、`JWTHeader`、`JWTPayload`、`JWT`、`JWTValidator`、`JWTUtil` |
 | `core.cache` | `CacheListener`、`Cache`、`CacheObj`、`AbstractCache`、`FIFOCache`、`LFUCache`、`LRUCache`、`NoCache`、`CacheUtil` |
 | `core.cron` | `CronException`、`CronConfig`、`Task`、`CronTask`、`Part`、七个 `PartMatcher` 实现、`PartParser`、`PatternParser`、`CronPattern`、`CronPatternBuilder` |
 | `core.dfa` | `WordTree`、`FoundWord`、`StopChar`、`SensitiveProcessor` |
@@ -149,6 +149,28 @@ val json = XML.toJSONObject("""<root id="1"><item>a</item><item>2</item></root>"
 json.getJSONObject("root")?.getJSONArray("item")?.getStr(0) // a
 XML.toXml(json)                                             // <root>...</root>
 ```
+
+## JWT
+
+`JWT` 用 `Claims`（底层是 JSON 模型）拼出 `header.payload.signature`。签名算法由 `JWTSigner` 提供：
+HMAC/RSA 实现留在平台侧，`NoneJWTSigner` 用于无签名 token。
+
+```kotlin
+val token = JWT.create()
+    .setPayload("sub", "user-1")
+    .setSigner(mySigner)          // 任意实现 sign/verify/getAlgorithm 的 JWTSigner
+    .sign()
+
+val parsed = JWT.of(token)
+parsed.getPayload("sub")          // user-1
+parsed.verify(mySigner)
+
+JWTValidator.of(parsed).validateDate(Instant.parse("2026-11-17T00:00:00Z"))
+```
+
+`setExpiresAt`/`setNotBefore`/`setIssuedAt` 接收 `kotlinx.datetime.Instant`，内部按秒存储。
+`JWTUtil` 提供 `createToken(payload, signer)`、`parseToken`、`verify`；上游接收字节数组的
+便捷重载依赖其 HMAC 签名器工厂，这里有意不提供。
 
 
 ## 布隆过滤器
