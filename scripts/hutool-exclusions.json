@@ -18,6 +18,26 @@
     "hutool-socket": "java.net sockets plus NIO channels; no socket API in commonMain.",
     "hutool-system": "java.lang.management, OSHI and JVM process introspection; per-OS data must come from expect/actual code."
   },
+  "packages": {
+    "cn.hutool.core.annotation": "Annotation metadata and scanners read java.lang.annotation through reflection, which commonMain does not expose.",
+    "cn.hutool.core.bean": "The bean layer copies properties through java.lang.reflect.Field/Method and java.lang.reflect.Type.",
+    "cn.hutool.core.comparator": "Comparators resolve bean properties or Pinyin collation through reflection/JVM text APIs.",
+    "cn.hutool.core.compiler": "Compiles Java sources with javax.tools; no compiler API exists in commonMain.",
+    "cn.hutool.core.convert.impl": "Each converter dispatches on java.lang.reflect.Type or a JVM-specific value type.",
+    "cn.hutool.core.getter": "Basic-type getters serve the reflection-based bean layer that the port replaces with explicit accessors.",
+    "cn.hutool.core.img": "Image operations need java.awt.image and ImageIO.",
+    "cn.hutool.core.io.file": "Paths, streams, file visitors and tailers are java.io/java.nio only.",
+    "cn.hutool.core.io.resource": "Resources wrap InputStream, URL, File or the classpath.",
+    "cn.hutool.core.io.watch": "File watching needs java.nio.file.WatchService.",
+    "cn.hutool.core.io.copy": "Copiers move java.io streams and channels.",
+    "cn.hutool.core.lang.caller": "Caller detection walks java.lang.StackWalker/SecurityManager frames.",
+    "cn.hutool.core.lang.ref": "Soft/weak/phantom references are java.lang.ref types.",
+    "cn.hutool.core.lang.reflect": "Method handles, lookups and generic type resolution are JVM APIs.",
+    "cn.hutool.core.lang.loader": "Class loaders and resource loaders are JVM concepts.",
+    "cn.hutool.core.net": "Sockets, SSL contexts and URL connections come from java.net/javax.net.",
+    "cn.hutool.core.text.csv": "CSV readers/writers are built on java.io Reader/Writer and files.",
+    "cn.hutool.log.dialect": "Every logging dialect bridges a JVM framework (SLF4J, Log4j, JUL, JBoss, TinyLog); users supply their own logger in KMP."
+  },
   "classes": {
     "cn.hutool.core.bean.BeanUtil": "Copies properties through java.lang.reflect.Field/Method; Kotlin data classes are constructed explicitly instead.",
     "cn.hutool.core.bean.BeanDesc": "Reflection-based property metadata.",

@@ -98,9 +98,19 @@ def husk_reason(java_source: str) -> str | None:
     return None
 
 
+def package_exclusion_for(fqcn: str, packages: dict[str, str]) -> tuple[str, str] | None:
+    """Return the longest matching package prefix and its reason, if any."""
+    best: tuple[str, str] | None = None
+    for prefix, reason in packages.items():
+        if fqcn.startswith(prefix + ".") and (best is None or len(prefix) > len(best[0])):
+            best = (prefix, reason)
+    return best
+
+
 def classify(items: list[dict], done_tags: dict[str, list[str]], exclusions: dict) -> list[dict]:
     module_exclusions: dict[str, str] = exclusions.get("modules", {})
     class_exclusions: dict[str, str] = exclusions.get("classes", {})
+    package_exclusions: dict[str, str] = exclusions.get("packages", {})
     hutool_root = Path(exclusions["_root"]) if "_root" in exclusions else None
 
     result: list[dict] = []
@@ -114,6 +124,10 @@ def classify(items: list[dict], done_tags: dict[str, list[str]], exclusions: dic
         elif item["fqcn"] in class_exclusions:
             record["status"] = "excluded"
             record["reason"] = class_exclusions[item["fqcn"]]
+        elif package_exclusion_for(item["fqcn"], package_exclusions) is not None:
+            package, reason = package_exclusion_for(item["fqcn"], package_exclusions)
+            record["status"] = "excluded"
+            record["reason"] = f"`{package}`: {reason}"
         elif not item["inClassScope"]:
             record["status"] = "excluded"
             record["reason"] = module_exclusions.get(

@@ -6,8 +6,8 @@
 
 - 总计：1557
 - 已完成：250
-- 明确不做：665
-- 待完成：755
+- 明确不做：920
+- 待完成：387
 
 详细清单：[coverage.md](docs/development/coverage.md)（由 `scripts/hutool_coverage.py` 生成，不在本文件复制明细）。
 
