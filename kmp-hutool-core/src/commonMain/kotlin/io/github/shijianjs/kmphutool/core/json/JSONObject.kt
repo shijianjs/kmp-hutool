@@ -32,6 +32,16 @@ class JSONObject() : JSON {
 
     fun setValue(key: String, value: Any?): JSONObject = put(key, value)
 
+    /** Adds [value], turning repeated keys into a [JSONArray]. */
+    fun accumulate(key: String, value: Any?): JSONObject {
+        when (val current = map[key]) {
+            null -> map[key] = value
+            is JSONArray -> current.add(value)
+            else -> map[key] = JSONArray(listOf(current, value))
+        }
+        return this
+    }
+
     fun remove(key: String): Any? = map.remove(key)
 
     fun containsKey(key: String): Boolean = map.containsKey(key)

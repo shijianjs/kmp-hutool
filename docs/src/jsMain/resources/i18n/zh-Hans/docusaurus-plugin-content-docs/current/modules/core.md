@@ -27,7 +27,7 @@ title: core
 | `core.io` | `FastByteBuffer`、`FastStringWriter`、`FastByteArrayOutputStream`、`NullOutputStream`、`StreamProgress`、`LineHandler`、`IORuntimeException` |
 | `core.setting` | `GroupedMap`、`GroupedSet`、`SettingRuntimeException` |
 | `core.thread.lock` | `NoLock`、`NoReadWriteLock` |
-| `core.json` | `JSONString`、`JSONBeanParser`、`JSONException`、`JSONStrFormatter`、`JSON`、`JSONObject`、`JSONArray`、`JSONNull`、`JSONTokener`、`JSONParser`、`JSONObjectIter`、`JSONSupport`，以及四个序列化接口 |
+| `core.json` | `JSONString`、`JSONBeanParser`、`JSONException`、`JSONStrFormatter`、`JSON`、`JSONObject`、`JSONArray`、`JSONNull`、`JSONTokener`、`JSONParser`、`JSONObjectIter`、`JSONSupport`、四个序列化接口、`XML`、`XMLTokener`、`InternalJSONUtil`，以及 `xml/{JSONXMLParser,JSONXMLSerializer,ParseConfig}` |
 | `core.jwt` | `JWTException`、`JWTSigner`、`NoneJWTSigner`、`AlgorithmUtil`（Claims 容器待 JSON 模型完成后补齐） |
 | `core.cache` | `CacheListener`、`Cache`、`CacheObj`、`AbstractCache`、`FIFOCache`、`LFUCache`、`LRUCache`、`NoCache`、`CacheUtil` |
 | `core.cron` | `CronException`、`CronConfig`、`Task`、`CronTask`、`Part`、七个 `PartMatcher` 实现、`PartParser`、`PatternParser`、`CronPattern`、`CronPatternBuilder` |
@@ -140,6 +140,16 @@ val parsed = JSONParser.of(JSONTokener("""[1,2,3]""")).parse() as JSONArray
 拷贝在 common Kotlin 不可用。需要类型化 Bean 时请直接用 `kotlinx.serialization` 的
 `@Serializable` 数据类。
 
+XML 转换不依赖平台 XML 库：`XML.toJSONObject` 使用 `XMLTokener` 与 `JSONXMLParser`，
+`XML.toXml` 使用 `JSONXMLSerializer`。文本放在 `content` 键下，属性与子元素共用命名空间，重复
+标签会合并为 `JSONArray`。
+
+```kotlin
+val json = XML.toJSONObject("""<root id="1"><item>a</item><item>2</item></root>""")
+json.getJSONObject("root")?.getJSONArray("item")?.getStr(0) // a
+XML.toXml(json)                                             // <root>...</root>
+```
+
 
 ## 布隆过滤器
 
@@ -158,7 +168,7 @@ val custom = SDBMFilter(1_000)         // 单独使用 SDBM 哈希过滤器
 
 | 领域 | 上游模块 | 本库做法 |
 | --- | --- | --- |
-| JSON | `hutool-json` | 动态 `JSONObject`/`JSONArray` 模型已在 core；类型化 Bean 用 `kotlinx-serialization-json` 数据类，`XML` 辅助类仍待补 |
+| JSON | `hutool-json` | 动态 `JSONObject`/`JSONArray` 模型与 XML 转换已在 core；类型化 Bean 用 `kotlinx-serialization-json` 数据类 |
 | HTTP | `hutool-http` | 不打进本库；用 Ktor |
 | 加密 | `hutool-crypto` | 算法名与异常在 core；摘要/加解密引擎仍交给平台 |
 | 日志 | `hutool-log` | 不打进本库；在平台日志之上用 `kotlin-logging` |

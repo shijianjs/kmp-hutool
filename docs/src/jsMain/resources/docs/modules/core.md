@@ -28,7 +28,7 @@ The only published module. Everything below lives in `commonMain`, so it compile
 | `core.io` | `FastByteBuffer`, `FastStringWriter`, `FastByteArrayOutputStream`, `NullOutputStream`, `StreamProgress`, `LineHandler`, `IORuntimeException` |
 | `core.setting` | `GroupedMap`, `GroupedSet`, `SettingRuntimeException` |
 | `core.thread.lock` | `NoLock`, `NoReadWriteLock` |
-| `core.json` | `JSONString`, `JSONBeanParser`, `JSONException`, `JSONStrFormatter`, `JSON`, `JSONObject`, `JSONArray`, `JSONNull`, `JSONTokener`, `JSONParser`, `JSONObjectIter`, `JSONSupport`, and the four serializer interfaces |
+| `core.json` | `JSONString`, `JSONBeanParser`, `JSONException`, `JSONStrFormatter`, `JSON`, `JSONObject`, `JSONArray`, `JSONNull`, `JSONTokener`, `JSONParser`, `JSONObjectIter`, `JSONSupport`, the four serializer interfaces, `XML`, `XMLTokener`, `InternalJSONUtil`, and `xml/{JSONXMLParser,JSONXMLSerializer,ParseConfig}` |
 | `core.jwt` | `JWTException`, `JWTSigner`, `NoneJWTSigner`, `AlgorithmUtil` (claim containers await the JSON model) |
 | `core.cache` | `CacheListener`, `Cache`, `CacheObj`, `AbstractCache`, `FIFOCache`, `LFUCache`, `LRUCache`, `NoCache`, `CacheUtil` |
 | `core.cron` | `CronException`, `CronConfig`, `Task`, `CronTask`, `Part`, the seven `PartMatcher` implementations, `PartParser`, `PatternParser`, `CronPattern`, `CronPatternBuilder` |
@@ -151,6 +151,16 @@ val parsed = JSONParser.of(JSONTokener("""[1,2,3]""")).parse() as JSONArray
 `parse(JSON)` field copy is not available in common Kotlin. For typed beans use
 `kotlinx.serialization` with `@Serializable` classes instead.
 
+XML conversion works without a platform XML library: `XML.toJSONObject` uses `XMLTokener` and
+`JSONXMLParser`, `XML.toXml` uses `JSONXMLSerializer`. Text goes under the `content` key, attributes
+and child elements share one namespace, and repeated tags become a `JSONArray`.
+
+```kotlin
+val json = XML.toJSONObject("""<root id="1"><item>a</item><item>2</item></root>""")
+json.getJSONObject("root")?.getJSONArray("item")?.getStr(0) // a
+XML.toXml(json)                                             // <root>...</root>
+```
+
 
 ## Bloom filters
 
@@ -172,7 +182,7 @@ val custom = SDBMFilter(1_000)         // one filter with the SDBM hash
 
 | Area | Upstream module | What this port does |
 | --- | --- | --- |
-| JSON | `hutool-json` | dynamic `JSONObject`/`JSONArray` model is in core; use `kotlinx-serialization-json` data classes for typed beans, and `XML` helpers are still pending |
+| JSON | `hutool-json` | dynamic `JSONObject`/`JSONArray` model plus XML conversion is in core; use `kotlinx-serialization-json` data classes for typed beans |
 | HTTP | `hutool-http` | not bundled; use Ktor |
 | Crypto | `hutool-crypto` | algorithm names and exceptions are in core; digest/cipher engines stay platform-specific |
 | Logging | `hutool-log` | not bundled; use `kotlin-logging` on top of your platform logger |
