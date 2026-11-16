@@ -14,6 +14,10 @@ import io.github.shijianjs.kmphutool.core.util.PhoneUtil
 import io.github.shijianjs.kmphutool.core.util.ReUtil
 import io.github.shijianjs.kmphutool.core.util.StrUtil
 import io.github.shijianjs.kmphutool.core.comparator.VersionComparator
+import io.github.shijianjs.kmphutool.core.convert.NumberChineseFormatter
+import io.github.shijianjs.kmphutool.core.date.BetweenFormatter
+import io.github.shijianjs.kmphutool.core.date.ChineseDate
+import io.github.shijianjs.kmphutool.core.date.DateUnit
 import kotlinx.browser.document
 import org.w3c.dom.HTMLElement
 
@@ -122,6 +126,19 @@ private fun chinaSection(): HTMLElement {
         "CreditCodeUtil.randomCreditCode" to CreditCodeUtil.randomCreditCode(),
     )
     return section("China-specific helpers", rows)
+}
+
+private fun dateSection(): HTMLElement {
+    val lunar = ChineseDate(2024, 1, 1)
+    val rows = listOf(
+        "ChineseDate" to lunar.toString(),
+        "ChineseDate.getTerm" to lunar.getTerm(),
+        "ChineseDate.getFestivals" to lunar.getFestivals(),
+        "DateUnit.HOUR.millis" to DateUnit.HOUR.getMillis().toString(),
+        "BetweenFormatter" to BetweenFormatter(90_000L, BetweenFormatter.Level.SECOND).format(),
+        "NumberChineseFormatter.money" to NumberChineseFormatter.format(1234.56, true, true),
+    )
+    return section("Dates, lunar calendar, money", rows)
 }
 
 private fun versionComparison(): String {

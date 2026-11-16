@@ -64,8 +64,21 @@ IdUtil.getSnowflakeNextId()
 ## Date and time
 
 Hutool's `DateUtil` is not ported as a class: dates are `kotlinx.datetime` values, and the
-`kotlinx-datetime` package is the only dependency of this module. The portable subset of `DateUtil`
-(formatting, parsing, offset arithmetic) is planned as extension functions on `LocalDate`,
+`kotlinx-datetime` package is the only dependency of this module. The implemented date surface is
+`DateUnit`/`DateField`/`Month`/`Week`/`Quarter`, `YearQuarter`, `BetweenFormatter`/`TimeInterval`,
+`DatePattern` constants, plus the whole `date.chinese` package (`LunarInfo`, `ChineseMonth`,
+`SolarTerms`, `GanZhi`, `LunarFestival`) and `ChineseDate`:
+
+```kotlin
+val lunar = ChineseDate(2024, 1, 1) // Gregorian 2024-02-10
+lunar.getChineseMonthName()          // 正月
+lunar.getGregorianDate()             // 2024-02-10
+lunar.getTerm()                      // 节气, empty when the day has none
+
+BetweenFormatter(90_000L, BetweenFormatter.Level.SECOND).format() // 1分30秒
+```
+
+The formatting/parsing part of `DateUtil` is planned as extension functions on `LocalDate`,
 `LocalDateTime` and `Instant`; when a helper needs a pattern engine it will stay in
 `kmp-hutool-core` rather than pulling in a formatting library.
 

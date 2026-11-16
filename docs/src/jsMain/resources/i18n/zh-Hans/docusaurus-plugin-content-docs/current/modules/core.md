@@ -58,7 +58,18 @@ IdUtil.getSnowflakeNextId()
 
 ## 日期时间
 
-Hutool 的 `DateUtil` 没有作为类移植：日期统一是 `kotlinx.datetime` 的值类型，`kotlinx-datetime` 也是本模块唯一依赖。`DateUtil` 中可移植的部分（格式化、解析、偏移运算）计划以扩展函数形式提供在 `LocalDate`、`LocalDateTime`、`Instant` 上；需要 pattern 引擎时留在 `kmp-hutool-core`，不再引入格式化库。
+Hutool 的 `DateUtil` 没有作为类移植：日期统一是 `kotlinx.datetime` 的值类型，`kotlinx-datetime` 也是本模块唯一依赖。已实现的部分包括 `DateUnit`/`DateField`/`Month`/`Week`/`Quarter`、`YearQuarter`、`BetweenFormatter`/`TimeInterval`、`DatePattern` 常量，以及整个 `date.chinese` 包（`LunarInfo`、`ChineseMonth`、`SolarTerms`、`GanZhi`、`LunarFestival`）和 `ChineseDate`：
+
+```kotlin
+val lunar = ChineseDate(2024, 1, 1) // 对应公历 2024-02-10
+lunar.getChineseMonthName()          // 正月
+lunar.getGregorianDate()             // 2024-02-10
+lunar.getTerm()                      // 节气，当天没有节气时为空串
+
+BetweenFormatter(90_000L, BetweenFormatter.Level.SECOND).format() // 1分30秒
+```
+
+`DateUtil` 中格式化/解析部分计划以扩展函数形式提供在 `LocalDate`、`LocalDateTime`、`Instant` 上；需要 pattern 引擎时留在 `kmp-hutool-core`，不再引入格式化库。
 
 ## 更大功能所需的可选依赖
 
