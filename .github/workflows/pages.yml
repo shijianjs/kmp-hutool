@@ -1,10 +1,8 @@
 name: Deploy the documentation site
 
 on:
-  # Every push to main redeploys the site, so docs, demo and API reference stay in step with the
-  # code. It can also be run by hand from the Actions tab or with `gh workflow run pages.yml`.
-  push:
-    branches: [main]
+  # Deploying is a manual action (`gh workflow run pages.yml`). Every push to main used to redeploy
+  # the site, which turned each commit into a full docs build.
   workflow_dispatch:
 
 concurrency:

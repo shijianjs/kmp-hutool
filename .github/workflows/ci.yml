@@ -1,9 +1,10 @@
 name: CI
 
 on:
+  # Pull requests only: a commit that reached the default branch was already verified by the PR run,
+  # so a push would just spend the same build again. Run this manually when needed
+  # (`gh workflow run ci.yml`); release pipelines keep their tag trigger.
   pull_request:
-    branches: [main, master]
-  push:
     branches: [main, master]
   workflow_dispatch:
 
