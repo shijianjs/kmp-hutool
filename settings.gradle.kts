@@ -24,12 +24,14 @@ dependencyResolutionManagement {
     repositories {
         mavenLocal()
         // Gradle does not fall back to the next repository once metadata is found, so pin the
-        // Kotlin libraries to Central: a local mirror may serve metadata without the klibs.
+        // Kotlin libraries to Central: a local mirror may serve metadata without the klibs, and a
+        // POM-only `kotlin-stdlib` in the local repository has no JS variant at all.
         exclusiveContent {
             forRepository { mavenCentral() }
             filter {
                 includeGroup("org.jetbrains.kotlin-wrappers")
                 includeGroup("org.jetbrains.kotlinx")
+                includeGroup("org.jetbrains.kotlin")
             }
         }
         mavenCentral()
