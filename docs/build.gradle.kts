@@ -31,4 +31,8 @@ kotlin {
 docusaurus {
     // Generates `sidebars.mjs` next to the site configuration from the exported `sidebars` function.
     sidebarsFunction = "sidebars"
+
+    // Dev 默认中文启动：docusaurusStart 不带参数也能起中文站点；构建不受影响。
+    // 单次运行仍可用 --locale en / -Pdocusaurus.locale=en 覆盖。
+    startArguments = listOf("--locale", "zh-Hans")
 }
