@@ -1,6 +1,6 @@
 # kmp-hutool
 
-<p align="center"><img src="docs/src/jsMain/resources/static/img/kmp-hutool-logo.svg" width="120" alt="kmp-hutool"></p>
+<p align="center"><img src="docs/src/jsMain/resources/static/img/kmp-hutool-logo.png" width="120" alt="kmp-hutool"></p>
 
 Hutool's utilities rewritten for Kotlin Multiplatform: one `commonMain` source set for the JVM,
 JavaScript, WebAssembly and Kotlin/Native.

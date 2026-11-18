@@ -1,6 +1,6 @@
 # kmp-hutool
 
-<p align="center"><img src="docs/src/jsMain/resources/static/img/kmp-hutool-logo.svg" width="120" alt="kmp-hutool"></p>
+<p align="center"><img src="docs/src/jsMain/resources/static/img/kmp-hutool-logo.png" width="120" alt="kmp-hutool"></p>
 
 Hutool 工具库的 Kotlin Multiplatform 改写版：JVM、JavaScript、WebAssembly 与 Kotlin/Native 共用同一份 `commonMain` 源码。
 

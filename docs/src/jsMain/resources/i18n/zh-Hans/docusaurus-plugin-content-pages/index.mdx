@@ -4,30 +4,51 @@ description: 为 Kotlin Multiplatform 改写的 Hutool 工具库
 hide_table_of_contents: true
 ---
 
-# kmp-hutool
+import logo from '@site/static/img/kmp-hutool-logo.png';
 
-为 Kotlin Multiplatform 改写的 Hutool 工具库：JVM、JavaScript、WebAssembly 共用同一份 `commonMain` 源码。
+{/* `<ktjs-…>` 分区来自 ktjs-docusaurus 的工具箱：Gradle 插件把它的 bundle 放到 `static/ktjs-client/`，
+    `ClientModule.kt` 在页面 hydrate 之后加载它。`href` 写成相对路径，两种 locale 前缀下都能用；
+    `logo` 用 import 取，这样 URL 会带上本站实际的 `baseUrl`。 */}
 
-**[阅读文档](/intro)** ·
-**[在线演示](https://shijianjs.github.io/kmp-hutool/demo/)** ·
-**[API 文档](https://shijianjs.github.io/kmp-hutool/api/)** ·
-**[GitHub](https://github.com/shijianjs/kmp-hutool)**
+<ktjs-hero logo-src={logo} title="kmp-hutool" tagline="为 Kotlin Multiplatform 改写的 Hutool 工具库">
 
-## 为什么做这个移植
+<ktjs-action kind="primary" href="intro">开始阅读</ktjs-action>
 
-| | |
-| --- | --- |
-| **一套源码，三个目标** | 所有工具都在 `commonMain`，同时编译到 JVM、JavaScript 与 WebAssembly。 |
-| **Kotlin 写法，不是 Java 复制** | 合并门面、`kotlinx-datetime` 值类型、显式 `toXxx` 转换、`data class` 值对象。 |
-| **没有隐藏依赖** | 核心只依赖 `kotlinx-datetime`，更大的领域保持可选。 |
-| **诚实的覆盖率** | 上游 1557 个类全部入清单，每个排除项都带理由。 |
-| **中英文档** | 本站与演示页都能在中英文之间切换。 |
-| **许可清晰** | 本项目 MIT，衍生自的上游代码为 Mulan PSL v2。 |
+<ktjs-action kind="secondary" href="https://github.com/shijianjs/kmp-hutool" icon="simple-icons:github">GitHub</ktjs-action>
 
-## 接下来
+<ktjs-badge href="https://github.com/shijianjs/kmp-hutool/blob/master/LICENSE" src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></ktjs-badge>
 
-- [简介](/intro)——这个库是什么、数字从哪里来。
-- [快速开始](/guide/getting-started)——坐标与第一个例子。
-- [设计](/guide/design)——移植了什么、改写在哪里、放弃了什么。
-- [覆盖率](/guide/coverage)——按类清单与每条排除理由。
-- [许可证](/guide/licensing)——MIT 与 Mulan PSL v2。
+<ktjs-badge href="https://github.com/shijianjs/kmp-hutool" src="https://img.shields.io/badge/Kotlin%20Multiplatform-7F52FF?logo=kotlin&logoColor=white" alt="Kotlin Multiplatform"></ktjs-badge>
+</ktjs-hero>
+
+<ktjs-features section-title="为什么做这个移植" tinted>
+
+<ktjs-feature icon="lucide:layers" title="一套源码，所有目标">所有工具都在 `commonMain`，同时编译到 JVM、JavaScript、WebAssembly 与 Kotlin/Native：服务端、浏览器、设备上都是同一个调用。</ktjs-feature>
+
+<ktjs-feature icon="lucide:code" title="Kotlin 写法，不是 Java 复制">合并门面、`kotlinx-datetime` 值类型、显式 `toXxx` 转换、`data class` 值对象，而不是把 Java 逐行搬运。</ktjs-feature>
+
+<ktjs-feature icon="lucide:package" title="没有隐藏依赖">核心只依赖 `kotlinx-datetime`，更大的领域保持可选，小体量的使用方不必为它们付费。</ktjs-feature>
+
+<ktjs-feature icon="lucide:list-checks" title="诚实的覆盖率">上游 1557 个类全部入清单，每个排除项都带理由：这是一页能逐条核对的目录，不是一句承诺。</ktjs-feature>
+
+<ktjs-feature icon="lucide:globe" title="中英文档">本站与演示页都能在中英文之间切换。</ktjs-feature>
+
+<ktjs-feature icon="lucide:scale" title="许可清晰">本项目 MIT，衍生自的上游代码为 Mulan PSL v2，按领域标清而不是含糊带过。</ktjs-feature>
+
+</ktjs-features>
+
+<ktjs-next-steps section-title="接下来">
+
+<ktjs-step href="intro" title="简介">这个库是什么、数字从哪里来。</ktjs-step>
+
+<ktjs-step href="guide/getting-started" title="快速开始">坐标与第一个例子。</ktjs-step>
+
+<ktjs-step href="guide/design" title="设计">移植了什么、改写在哪里、放弃了什么。</ktjs-step>
+
+<ktjs-step href="guide/coverage" title="覆盖率">按类清单与每条排除理由。</ktjs-step>
+
+<ktjs-step href="https://shijianjs.github.io/kmp-hutool/demo/" title="在线演示">在浏览器里跑起来的工具函数。</ktjs-step>
+
+<ktjs-step href="https://shijianjs.github.io/kmp-hutool/api/" title="API 文档">已发布模块的 Dokka 产物。</ktjs-step>
+
+</ktjs-next-steps>

@@ -4,31 +4,52 @@ description: Hutool's utilities, rewritten for Kotlin Multiplatform
 hide_table_of_contents: true
 ---
 
-# kmp-hutool
+import logo from '@site/static/img/kmp-hutool-logo.png';
 
-Hutool's utilities, rewritten for Kotlin Multiplatform: one `commonMain` source set for the JVM,
-JavaScript and WebAssembly.
+{/* The `<ktjs-…>` sections come from the ktjs-docusaurus kit: the Gradle plugin publishes its bundle
+    under `static/ktjs-client/`, and `ClientModule.kt` loads it once the page is hydrated. `href`s stay
+    relative so the same page works under both locale prefixes; `logo` is imported so the URL carries
+    whatever `baseUrl` this site is deployed under. */}
 
-**[Read the documentation](/intro)** ·
-**[Try the demo](https://shijianjs.github.io/kmp-hutool/demo/)** ·
-**[API reference](https://shijianjs.github.io/kmp-hutool/api/)** ·
-**[GitHub](https://github.com/shijianjs/kmp-hutool)**
+<ktjs-hero logo-src={logo} title="kmp-hutool" tagline="Hutool's utilities, rewritten for Kotlin Multiplatform">
 
-## Why this port
+<ktjs-action kind="primary" href="intro">Get started</ktjs-action>
 
-| | |
-| --- | --- |
-| **One source set, three targets** | Every helper lives in `commonMain` and compiles for the JVM, JavaScript and WebAssembly. |
-| **Kotlin, not Java copies** | Merged facades, `kotlinx-datetime` values, explicit `toXxx` conversions and `data class` value types. |
-| **No hidden dependencies** | The core depends only on `kotlinx-datetime`; larger areas stay optional. |
-| **Honest coverage** | All 1557 upstream classes are inventoried; every exclusion carries a reason. |
-| **Docs in two languages** | This site and the demo switch between English and Simplified Chinese. |
-| **Clear licensing** | MIT for this port, Mulan PSL v2 for the upstream code it derives from. |
+<ktjs-action kind="secondary" href="https://github.com/shijianjs/kmp-hutool" icon="simple-icons:github">GitHub</ktjs-action>
 
-## Where to go next
+<ktjs-badge href="https://github.com/shijianjs/kmp-hutool/blob/master/LICENSE" src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></ktjs-badge>
 
-- [Introduction](/intro) — what the library is and where the numbers come from.
-- [Getting started](/guide/getting-started) — coordinates and the first calls.
-- [Design](/guide/design) — what was ported, rewritten and dropped.
-- [Coverage](/guide/coverage) — the class inventory and every exclusion reason.
-- [Licensing](/guide/licensing) — MIT and Mulan PSL v2.
+<ktjs-badge href="https://github.com/shijianjs/kmp-hutool" src="https://img.shields.io/badge/Kotlin%20Multiplatform-7F52FF?logo=kotlin&logoColor=white" alt="Kotlin Multiplatform"></ktjs-badge>
+</ktjs-hero>
+
+<ktjs-features section-title="Why this port" tinted>
+
+<ktjs-feature icon="lucide:layers" title="One source set, every target">Every helper lives in `commonMain` and compiles for the JVM, JavaScript, WebAssembly and Kotlin/Native, so the same call works on a server, in a browser and on a device.</ktjs-feature>
+
+<ktjs-feature icon="lucide:code" title="Kotlin, not Java copies">Merged facades, `kotlinx-datetime` values, explicit `toXxx` conversions and `data class` value types instead of transliterated Java.</ktjs-feature>
+
+<ktjs-feature icon="lucide:package" title="No hidden dependencies">The core depends only on `kotlinx-datetime`; larger areas stay optional, so a small consumer does not pay for them.</ktjs-feature>
+
+<ktjs-feature icon="lucide:list-checks" title="Honest coverage">All 1557 upstream classes are inventoried; every exclusion carries a reason, and the catalogue is a page you can check instead of a promise.</ktjs-feature>
+
+<ktjs-feature icon="lucide:globe" title="Docs in two languages">This site and the demo switch between English and Simplified Chinese.</ktjs-feature>
+
+<ktjs-feature icon="lucide:scale" title="Clear licensing">MIT for this port, Mulan PSL v2 for the upstream code it derives from — stated per area, not glossed over.</ktjs-feature>
+
+</ktjs-features>
+
+<ktjs-next-steps section-title="Where to go next">
+
+<ktjs-step href="intro" title="Introduction">What the library is and where the numbers come from.</ktjs-step>
+
+<ktjs-step href="guide/getting-started" title="Getting started">Coordinates and the first calls.</ktjs-step>
+
+<ktjs-step href="guide/design" title="Design">What was ported, rewritten and dropped.</ktjs-step>
+
+<ktjs-step href="guide/coverage" title="Coverage">The class inventory and every exclusion reason.</ktjs-step>
+
+<ktjs-step href="https://shijianjs.github.io/kmp-hutool/demo/" title="Demo">The helpers running in a browser.</ktjs-step>
+
+<ktjs-step href="https://shijianjs.github.io/kmp-hutool/api/" title="API reference">Dokka output for the published modules.</ktjs-step>
+
+</ktjs-next-steps>

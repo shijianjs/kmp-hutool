@@ -67,7 +67,11 @@ fun docusaurusConfig(): Config = unsafeJso {
     tagline = "Hutool's utilities, ported to Kotlin Multiplatform"
     url = SITE_URL
     baseUrl = SITE_BASE_URL
-    favicon = "img/kmp-hutool-logo.svg"
+    favicon = "img/kmp-hutool-logo.png"
+    // The generated client module: it loads the kit's browser bundle after hydration and places the
+    // desktop TOC's collapse toggle. Docusaurus does not discover it on its own.
+    clientModules = arrayOf("./client-module.mjs")
+
     trailingSlash = true
     // A broken internal link fails the build instead of shipping a 404 to the Pages site.
     onBrokenLinks = ReportingSeverities.`throw`
@@ -120,7 +124,7 @@ fun docusaurusConfig(): Config = unsafeJso {
         navbar = unsafeJso {
             title = "kmp-hutool"
             logo = unsafeJso<NavbarLogo> {
-                src = "img/kmp-hutool-logo.svg"
+                src = "img/kmp-hutool-logo.png"
                 width = StringOrDouble(32.0)
                 height = StringOrDouble(32.0)
             }

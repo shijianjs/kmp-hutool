@@ -8,6 +8,9 @@
   - 所有 target 都声明，保证任意宿主都能编译全部 klib；非宿主的 `*Test` 在构建脚本里禁用，由 CI 的 Linux / Windows / macOS 三个任务各跑自己的原生套件。加 target 时同步改 `runnableNativeTargets` 与 `.github/workflows/ci.yml`。
 - `demo`：浏览器演示页（Kotlin/JS + `kotlin-browser`），中英文切换，发布在 Pages 的 `/demo/`。
 - `docs`：文档站，Kotlin/JS 模块，配置在 `docs/src/jsMain/kotlin/.../Config.kt`，页面在 `docs/src/jsMain/resources/docs/`，译文在 `docs/src/jsMain/resources/i18n/zh-Hans/`。英文是源语言。
+  落地页 `resources/pages/index.mdx` 用 `ktjs-docusaurus-kit` 的 `<ktjs-hero>` / `<ktjs-features>` / `<ktjs-next-steps>`；
+  这些元素和右侧目录折叠 `TocToggle` 的浏览器 bundle 由 `kitBundle` + `extractKitBundle` 拷到 `static/ktjs-client/`，
+  再由 `ClientModule.kt` 在 hydration 之后加载（`Config.kt` 的 `clientModules` 列出生成出来的 `./client-module.mjs`）。
 - `scripts/hutool_inventory.py`、`scripts/hutool_coverage.py`、`scripts/hutool-exclusions.json`：功能清单与覆盖率。
 - `docs/development/coverage.md`：脚本生成的完整清单（不要在文档站手工复制数字）。
 
