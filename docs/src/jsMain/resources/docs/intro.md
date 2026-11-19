@@ -37,6 +37,16 @@ decision.
 | Part | Role |
 | --- | --- |
 | `kmp-hutool-core` | the library: `commonMain` implementations of the portable Hutool core classes, tested on JVM and JS |
+```mermaid
+flowchart TB
+  UP["Hutool 5.8.48<br/>1557 classes, Java only"] -->|"port what crosses platforms"| CORE["kmp-hutool-core<br/>commonMain"]
+  CORE --> JVM["JVM"]
+  CORE --> JS["JavaScript<br/>Node.js tests + browser demo"]
+  CORE --> WASM["WebAssembly (wasmJs)"]
+  CORE --> NAT["Native<br/>linux · mingw · apple · ios"]
+  UP -->|"left out on purpose"| EX["reflection, java.io, threads, AWT,<br/>BigDecimal, streams"]
+  CORE --> DOCS["demo · API reference · coverage page"]
+```
 | [Demo](https://shijianjs.github.io/kmp-hutool/demo/) | a runnable page that calls the library in the browser, switchable between English and Chinese |
 | [API](https://shijianjs.github.io/kmp-hutool/api/) | Dokka reference for every public declaration |
 | [Coverage](guide/coverage.md) | the class-by-class inventory, the ported count and the reason for every exclusion |

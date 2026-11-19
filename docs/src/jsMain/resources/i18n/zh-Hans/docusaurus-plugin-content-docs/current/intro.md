@@ -27,6 +27,16 @@ title: 简介
 | 部分 | 作用 |
 | --- | --- |
 | `kmp-hutool-core` | 库本体：`commonMain` 里可移植的 Hutool 核心类，JVM、JS、Wasm 与 Native 都有测试 |
+```mermaid
+flowchart TB
+  UP["Hutool 5.8.48<br/>1557 个类，只有 Java"] -->|"移植能跨平台的那部分"| CORE["kmp-hutool-core<br/>commonMain"]
+  CORE --> JVM["JVM"]
+  CORE --> JS["JavaScript<br/>Node.js 测试 + 浏览器演示"]
+  CORE --> WASM["WebAssembly（wasmJs）"]
+  CORE --> NAT["Native<br/>linux · mingw · apple · ios"]
+  UP -->|"刻意不移植"| EX["反射、java.io、线程、AWT、<br/>BigDecimal、stream"]
+  CORE --> DOCS["演示页 · API 文档 · 覆盖率页"]
+```
 | [演示](https://shijianjs.github.io/kmp-hutool/demo/) | 浏览器里直接调用本库的页面，中英文可切换 |
 | [API](https://shijianjs.github.io/kmp-hutool/api/) | Dokka 生成的公开声明文档 |
 | [覆盖率](guide/coverage.md) | 按类盘点的清单、已完成数量，以及每个排除项的理由 |
