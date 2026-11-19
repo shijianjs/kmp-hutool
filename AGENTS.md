@@ -6,7 +6,15 @@
 
 - `kmp-hutool-core`：唯一发布模块，`commonMain` 实现，target 为 `jvm`、`js`、`wasmJs` 以及全套 Kotlin/Native（`linuxX64`、`linuxArm64`、`mingwX64`、`macosX64`、`macosArm64`、`iosX64`、`iosArm64`、`iosSimulatorArm64`）。版本 `kmp-hutool.version`（当前 `5.8.48-kt.1`），group `io.github.shijianjs`。
   - 所有 target 都声明，保证任意宿主都能编译全部 klib；非宿主的 `*Test` 在构建脚本里禁用，由 CI 的 Linux / Windows / macOS 三个任务各跑自己的原生套件。加 target 时同步改 `runnableNativeTargets` 与 `.github/workflows/ci.yml`。
-- `demo`：浏览器演示页（Kotlin/JS + `kotlin-browser`），中英文切换，发布在 Pages 的 `/demo/`。
+- `demo`：演示站，外壳（`vaadin-app-layout` 外壳、抽屉菜单、语言与主题切换、路由、页面框架）全部来自
+  `ktjs-demo-kit`，本仓只写内容：一页一族工具。发布在 Pages 的 `/demo/`。
+  - 每页是「一组调用 + 结果」的卡片网格：`page/ResultPage.kt` 是这套页面的公共落点，具体页面只提供
+    `ResultRow`（调用表达式与返回值，二者都不翻译）和两种语言的标题/提示。
+  - 返回值在页面构造时算一次就固定下来：它们都是确定值，切换语言只改标题，不重算也不会跳动。
+  - 页面按业务分包（`page/text`、`page/number`、`page/collection`、`page/encoding`、`page/dates`、
+    `page/china`、`page/hashes`），不要为了「整齐」新建 `components/`、`utils/` 这类技术目录。
+  - `src/jsMain/resources` 里没有 `demo.css`：Lumo 由 `copyLumoStyles` 从 npm 工作区拷入，其余样式由 kit 自己的
+    sheet 与 Vaadin 组件承担；页面里出现多行 CSS 去拼卡片/行/徽章，说明把组件语义写成了样式。
 - `docs`：文档站，Kotlin/JS 模块，配置在 `docs/src/jsMain/kotlin/.../Config.kt`，页面在 `docs/src/jsMain/resources/docs/`，译文在 `docs/src/jsMain/resources/i18n/zh-Hans/`。英文是源语言。
   落地页 `resources/pages/index.mdx` 用 `ktjs-docusaurus-kit` 的 `<ktjs-hero>` / `<ktjs-features>` / `<ktjs-next-steps>`；
   这些元素和右侧目录折叠 `TocToggle` 的浏览器 bundle 由 `kitBundle` + `extractKitBundle` 拷到 `static/ktjs-client/`，
