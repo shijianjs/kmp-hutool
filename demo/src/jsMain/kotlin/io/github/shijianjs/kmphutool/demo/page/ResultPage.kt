@@ -4,11 +4,10 @@ import io.github.shijianjs.ktjs.demo.i18n.Binder
 import io.github.shijianjs.ktjs.demo.i18n.Lang
 import io.github.shijianjs.ktjs.demo.i18n.Langs
 import io.github.shijianjs.ktjs.demo.i18n.Translations
-import io.github.shijianjs.ktjs.demo.nav.Page
+import io.github.shijianjs.ktjs.demo.page.DemoPage
 import io.github.shijianjs.ktjs.demo.page.codeText
 import io.github.shijianjs.ktjs.demo.page.exampleBox
 import io.github.shijianjs.ktjs.demo.page.grid
-import io.github.shijianjs.ktjs.demo.page.newPage
 import io.github.shijianjs.ktjs.demo.page.paragraph
 import io.github.shijianjs.ktjs.demo.page.sectionBlock
 
@@ -27,21 +26,29 @@ class ResultSection(val title: String, val hint: String, val rows: List<ResultRo
 class ResultTexts(val title: String, val summary: String, val sections: List<ResultSection>)
 
 /**
- * A page that is nothing but computed results.
+ * Base class of the pages that are nothing but computed results.
  *
- * Eight pages of this site differ only in which family of calls they run, so they share this frame:
- * one section per family, one card per call. The values are computed once, when the page is built
- * (they are deterministic), and a language switch only rewrites the headings — the cards are left
- * alone, which is also why switching languages never re-runs a call.
+ * Eight pages of this site differ only in which family of calls they run, so they share this
+ * renderer: one section per family, one card per call. A subclass is a page element of its own
+ * (`<hutool-china-page>` and so on) and hands its table in from `init` through [render] — the class
+ * that owns the route is the class that owns the DOM, the shared part is only how the results are
+ * laid out.
+ *
+ * The values are computed once, when the page is built (they are deterministic), and a language
+ * switch only rewrites the headings — the cards are left alone, which is also why switching
+ * languages never re-runs a call.
  */
-internal class ResultPage(private val translations: Translations<ResultTexts>) : Page {
-    private val page = newPage()
+internal open class ResultPage : DemoPage() {
+    private var translations: Translations<ResultTexts>? = null
 
-    private val binder = Binder(translations)
+    private lateinit var binder: Binder<ResultTexts>
 
-    override val node get() = page
+    /** Fills this page from [translations]: title, summary and one section per family of calls. */
+    protected fun render(translations: Translations<ResultTexts>) {
+        this.translations = translations
+        binder = Binder(translations)
+        body.replaceChildren()
 
-    init {
         val english = translations[Langs.EN]
         english.sections.forEachIndexed { index, section ->
             val block = sectionBlock(section.title, section.hint)
@@ -53,14 +60,17 @@ internal class ResultPage(private val translations: Translations<ResultTexts>) :
                 exampleBox(null, codeText(entry.call), paragraph(entry.value))
             }
             block.body.append(grid(minColumnWidth = 240, *cards.toTypedArray()))
-            page.body.append(block.root)
+            body.append(block.root)
         }
+
+        binder.apply(Langs.EN)
     }
 
     override fun applyTranslation(lang: Lang) {
+        val translations = translations ?: return
         val current = translations[lang]
-        page.setTitle(current.title)
-        page.setSummary(current.summary)
+        setTitle(current.title)
+        setSummary(current.summary)
         binder.apply(lang)
     }
 }

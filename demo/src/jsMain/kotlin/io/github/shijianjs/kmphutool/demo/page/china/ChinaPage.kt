@@ -1,5 +1,9 @@
 package io.github.shijianjs.kmphutool.demo.page.china
 
+import io.github.shijianjs.ktjs.dom.element.invoke
+import io.github.shijianjs.ktjs.dom.webcomponent.defineIfMissing
+import web.components.CustomElementReference
+import web.dom.TagName
 import io.github.shijianjs.kmphutool.core.util.CreditCodeUtil
 import io.github.shijianjs.kmphutool.core.util.DesensitizedUtil
 import io.github.shijianjs.kmphutool.core.util.IdcardUtil
@@ -9,7 +13,6 @@ import io.github.shijianjs.kmphutool.demo.page.ResultRow
 import io.github.shijianjs.kmphutool.demo.page.ResultSection
 import io.github.shijianjs.kmphutool.demo.page.ResultTexts
 import io.github.shijianjs.kmphutool.demo.page.resultTexts
-import io.github.shijianjs.ktjs.demo.nav.Page
 
 /** A well-formed mainland id card, and the inputs the masking helpers take. */
 private const val ID_CARD: String = "11010519491231002X"
@@ -54,4 +57,23 @@ private val chinese: ResultTexts = ResultTexts(
 private val chinaTexts = resultTexts(english, chinese)
 
 /** Every string this page shows, and the calls behind them. */
-internal class ChinaPage : Page by ResultPage(chinaTexts)
+internal class ChinaPage : ResultPage() {
+    init {
+        render(chinaTexts)
+    }
+
+    companion object : CustomElementReference<ChinaPage>(ChinaPage::class.js) {
+        val NAME: TagName<ChinaPage> = TagName("hutool-china-page")
+
+        fun define() {
+            defineIfMissing(NAME, this)
+        }
+    }
+}
+
+/** Creates a defined `<hutool-china-page>`. */
+internal fun newChinaPage(): ChinaPage {
+    ChinaPage.define()
+    return ChinaPage.NAME()
+}
+

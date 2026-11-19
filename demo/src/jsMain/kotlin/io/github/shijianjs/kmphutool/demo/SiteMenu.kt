@@ -1,13 +1,13 @@
 package io.github.shijianjs.kmphutool.demo
 
-import io.github.shijianjs.kmphutool.demo.page.china.ChinaPage
-import io.github.shijianjs.kmphutool.demo.page.collection.CollectionPage
-import io.github.shijianjs.kmphutool.demo.page.dates.DatesPage
-import io.github.shijianjs.kmphutool.demo.page.encoding.EncodingPage
-import io.github.shijianjs.kmphutool.demo.page.hashes.HashesPage
-import io.github.shijianjs.kmphutool.demo.page.number.NumberPage
-import io.github.shijianjs.kmphutool.demo.page.overview.OverviewPage
-import io.github.shijianjs.kmphutool.demo.page.text.TextPage
+import io.github.shijianjs.kmphutool.demo.page.china.newChinaPage
+import io.github.shijianjs.kmphutool.demo.page.collection.newCollectionPage
+import io.github.shijianjs.kmphutool.demo.page.dates.newDatesPage
+import io.github.shijianjs.kmphutool.demo.page.encoding.newEncodingPage
+import io.github.shijianjs.kmphutool.demo.page.hashes.newHashesPage
+import io.github.shijianjs.kmphutool.demo.page.number.newNumberPage
+import io.github.shijianjs.kmphutool.demo.page.overview.newOverviewPage
+import io.github.shijianjs.kmphutool.demo.page.text.newTextPage
 import io.github.shijianjs.ktjs.demo.nav.DemoMenu
 import io.github.shijianjs.ktjs.demo.nav.Entry
 import io.github.shijianjs.ktjs.demo.nav.Group
@@ -41,13 +41,13 @@ internal val CRYPTO: Group = Group("crypto", "lucide:shield-check")
  */
 fun siteMenu(): DemoMenu = DemoMenu(
     listOf(
-        Entry("overview", START) { OverviewPage() },
-        Entry("text", TEXT) { TextPage() },
-        Entry("number", TEXT) { NumberPage() },
-        Entry("collection", TEXT) { CollectionPage() },
-        Entry("encoding", DATA) { EncodingPage() },
-        Entry("dates", DATA) { DatesPage() },
-        Entry("china", CHINA) { ChinaPage() },
-        Entry("hashes", CRYPTO) { HashesPage() },
+        Entry("overview", START) { newOverviewPage() },
+        Entry("text", TEXT) { newTextPage() },
+        Entry("number", TEXT) { newNumberPage() },
+        Entry("collection", TEXT) { newCollectionPage() },
+        Entry("encoding", DATA) { newEncodingPage() },
+        Entry("dates", DATA) { newDatesPage() },
+        Entry("china", CHINA) { newChinaPage() },
+        Entry("hashes", CRYPTO) { newHashesPage() },
     ),
 )

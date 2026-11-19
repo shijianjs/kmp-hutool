@@ -1,12 +1,15 @@
 package io.github.shijianjs.kmphutool.demo.page.collection
 
+import io.github.shijianjs.ktjs.dom.element.invoke
+import io.github.shijianjs.ktjs.dom.webcomponent.defineIfMissing
+import web.components.CustomElementReference
+import web.dom.TagName
 import io.github.shijianjs.kmphutool.core.collection.CollUtil
 import io.github.shijianjs.kmphutool.demo.page.ResultPage
 import io.github.shijianjs.kmphutool.demo.page.ResultRow
 import io.github.shijianjs.kmphutool.demo.page.ResultSection
 import io.github.shijianjs.kmphutool.demo.page.ResultTexts
 import io.github.shijianjs.kmphutool.demo.page.resultTexts
-import io.github.shijianjs.ktjs.demo.nav.Page
 
 /** The calls this page demonstrates on small fixed lists, so the values stay readable. */
 private val rows: List<ResultRow> = listOf(
@@ -48,4 +51,23 @@ private val chinese: ResultTexts = ResultTexts(
 private val collectionTexts = resultTexts(english, chinese)
 
 /** Every string this page shows, and the calls behind them. */
-internal class CollectionPage : Page by ResultPage(collectionTexts)
+internal class CollectionPage : ResultPage() {
+    init {
+        render(collectionTexts)
+    }
+
+    companion object : CustomElementReference<CollectionPage>(CollectionPage::class.js) {
+        val NAME: TagName<CollectionPage> = TagName("hutool-collection-page")
+
+        fun define() {
+            defineIfMissing(NAME, this)
+        }
+    }
+}
+
+/** Creates a defined `<hutool-collection-page>`. */
+internal fun newCollectionPage(): CollectionPage {
+    CollectionPage.define()
+    return CollectionPage.NAME()
+}
+

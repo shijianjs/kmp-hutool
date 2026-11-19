@@ -1,5 +1,9 @@
 package io.github.shijianjs.kmphutool.demo.page.text
 
+import io.github.shijianjs.ktjs.dom.element.invoke
+import io.github.shijianjs.ktjs.dom.webcomponent.defineIfMissing
+import web.components.CustomElementReference
+import web.dom.TagName
 import io.github.shijianjs.kmphutool.core.text.StrFormatter
 import io.github.shijianjs.kmphutool.core.util.ReUtil
 import io.github.shijianjs.kmphutool.core.util.StrUtil
@@ -8,7 +12,6 @@ import io.github.shijianjs.kmphutool.demo.page.ResultRow
 import io.github.shijianjs.kmphutool.demo.page.ResultSection
 import io.github.shijianjs.kmphutool.demo.page.ResultTexts
 import io.github.shijianjs.kmphutool.demo.page.resultTexts
-import io.github.shijianjs.ktjs.demo.nav.Page
 
 /** The calls this page demonstrates; every value is computed here, once, by the port itself. */
 private val rows: List<ResultRow> = listOf(
@@ -47,4 +50,23 @@ private val chinese: ResultTexts = ResultTexts(
 private val textTexts = resultTexts(english, chinese)
 
 /** Every string this page shows, and the calls behind them. */
-internal class TextPage : Page by ResultPage(textTexts)
+internal class TextPage : ResultPage() {
+    init {
+        render(textTexts)
+    }
+
+    companion object : CustomElementReference<TextPage>(TextPage::class.js) {
+        val NAME: TagName<TextPage> = TagName("hutool-text-page")
+
+        fun define() {
+            defineIfMissing(NAME, this)
+        }
+    }
+}
+
+/** Creates a defined `<hutool-text-page>`. */
+internal fun newTextPage(): TextPage {
+    TextPage.define()
+    return TextPage.NAME()
+}
+

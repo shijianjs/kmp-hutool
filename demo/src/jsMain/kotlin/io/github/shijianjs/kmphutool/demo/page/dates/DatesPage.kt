@@ -1,5 +1,9 @@
 package io.github.shijianjs.kmphutool.demo.page.dates
 
+import io.github.shijianjs.ktjs.dom.element.invoke
+import io.github.shijianjs.ktjs.dom.webcomponent.defineIfMissing
+import web.components.CustomElementReference
+import web.dom.TagName
 import io.github.shijianjs.kmphutool.core.convert.NumberChineseFormatter
 import io.github.shijianjs.kmphutool.core.date.BetweenFormatter
 import io.github.shijianjs.kmphutool.core.date.ChineseDate
@@ -9,7 +13,6 @@ import io.github.shijianjs.kmphutool.demo.page.ResultRow
 import io.github.shijianjs.kmphutool.demo.page.ResultSection
 import io.github.shijianjs.kmphutool.demo.page.ResultTexts
 import io.github.shijianjs.kmphutool.demo.page.resultTexts
-import io.github.shijianjs.ktjs.demo.nav.Page
 
 /** One lunar date, so the term and the festivals come from the same object. */
 private val lunar: ChineseDate = ChineseDate(2024, 1, 1)
@@ -56,4 +59,23 @@ private val chinese: ResultTexts = ResultTexts(
 private val datesTexts = resultTexts(english, chinese)
 
 /** Every string this page shows, and the calls behind them. */
-internal class DatesPage : Page by ResultPage(datesTexts)
+internal class DatesPage : ResultPage() {
+    init {
+        render(datesTexts)
+    }
+
+    companion object : CustomElementReference<DatesPage>(DatesPage::class.js) {
+        val NAME: TagName<DatesPage> = TagName("hutool-dates-page")
+
+        fun define() {
+            defineIfMissing(NAME, this)
+        }
+    }
+}
+
+/** Creates a defined `<hutool-dates-page>`. */
+internal fun newDatesPage(): DatesPage {
+    DatesPage.define()
+    return DatesPage.NAME()
+}
+

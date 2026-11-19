@@ -1,5 +1,9 @@
 package io.github.shijianjs.kmphutool.demo.page.overview
 
+import io.github.shijianjs.ktjs.demo.page.DemoPage
+import io.github.shijianjs.ktjs.dom.webcomponent.defineIfMissing
+import web.components.CustomElementReference
+import web.dom.TagName
 import io.github.shijianjs.kmphutool.demo.API_URL
 import io.github.shijianjs.kmphutool.demo.DOCS_URL
 import io.github.shijianjs.kmphutool.demo.SOURCE_URL
@@ -8,9 +12,7 @@ import io.github.shijianjs.ktjs.demo.i18n.Lang
 import io.github.shijianjs.ktjs.demo.i18n.Langs
 import io.github.shijianjs.ktjs.demo.i18n.Translations
 import io.github.shijianjs.ktjs.demo.i18n.texts
-import io.github.shijianjs.ktjs.demo.nav.Page
 import io.github.shijianjs.ktjs.demo.page.anchor
-import io.github.shijianjs.ktjs.demo.page.newPage
 import io.github.shijianjs.ktjs.demo.page.paragraph
 import io.github.shijianjs.ktjs.demo.page.sectionBlock
 import io.github.shijianjs.ktjs.dom.element.invoke
@@ -89,17 +91,15 @@ private val overviewTexts: Translations<OverviewTexts> = texts(
 )
 
 /** Landing page: what this port is, how the demo is organised, why it exists at all. */
-internal class OverviewPage : Page {
-    private val page = newPage()
+internal class OverviewPage : DemoPage() {
 
     private val texts = Binder(overviewTexts)
 
-    override val node get() = page
 
     init {
-        page.addLink(texts.bind(anchor("", DOCS_URL, external = true), { it.docsLink }))
-        page.addLink(texts.bind(anchor("", API_URL, external = true), { it.apiLink }))
-        page.addLink(texts.bind(anchor("", SOURCE_URL, external = true), { it.sourceLink }))
+        addLink(texts.bind(anchor("", DOCS_URL, external = true), { it.docsLink }))
+        addLink(texts.bind(anchor("", API_URL, external = true), { it.apiLink }))
+        addLink(texts.bind(anchor("", SOURCE_URL, external = true), { it.sourceLink }))
 
         val purpose = sectionBlock(overviewEnglish.purposeHeading, null)
         texts.bind(purpose.title) { it.purposeHeading }
@@ -117,13 +117,27 @@ internal class OverviewPage : Page {
         texts.bind(platforms.title) { it.platformsHeading }
         platforms.body.append(texts.bind(paragraph(), { it.platformsBody }))
 
-        page.body.append(purpose.root, pages.root, platforms.root)
+        body.append(purpose.root, pages.root, platforms.root)
     }
 
     override fun applyTranslation(lang: Lang) {
         val current = overviewTexts[lang]
-        page.setTitle(current.title)
-        page.setSummary(current.summary)
+        setTitle(current.title)
+        setSummary(current.summary)
         texts.apply(lang)
     }
+
+    companion object : CustomElementReference<OverviewPage>(OverviewPage::class.js) {
+        val NAME: TagName<OverviewPage> = TagName("hutool-overview-page")
+
+        fun define() {
+            defineIfMissing(NAME, this)
+        }
+    }
+}
+
+/** Creates a defined `<hutool-overview-page>`. */
+internal fun newOverviewPage(): OverviewPage {
+    OverviewPage.define()
+    return OverviewPage.NAME()
 }

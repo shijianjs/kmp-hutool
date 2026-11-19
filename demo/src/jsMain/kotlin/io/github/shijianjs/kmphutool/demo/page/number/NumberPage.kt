@@ -1,12 +1,15 @@
 package io.github.shijianjs.kmphutool.demo.page.number
 
+import io.github.shijianjs.ktjs.dom.element.invoke
+import io.github.shijianjs.ktjs.dom.webcomponent.defineIfMissing
+import web.components.CustomElementReference
+import web.dom.TagName
 import io.github.shijianjs.kmphutool.core.util.NumberUtil
 import io.github.shijianjs.kmphutool.demo.page.ResultPage
 import io.github.shijianjs.kmphutool.demo.page.ResultRow
 import io.github.shijianjs.kmphutool.demo.page.ResultSection
 import io.github.shijianjs.kmphutool.demo.page.ResultTexts
 import io.github.shijianjs.kmphutool.demo.page.resultTexts
-import io.github.shijianjs.ktjs.demo.nav.Page
 
 /** The calls this page demonstrates, each returning a formatted value rather than a raw double. */
 private val rows: List<ResultRow> = listOf(
@@ -46,4 +49,23 @@ private val chinese: ResultTexts = ResultTexts(
 private val numberTexts = resultTexts(english, chinese)
 
 /** Every string this page shows, and the calls behind them. */
-internal class NumberPage : Page by ResultPage(numberTexts)
+internal class NumberPage : ResultPage() {
+    init {
+        render(numberTexts)
+    }
+
+    companion object : CustomElementReference<NumberPage>(NumberPage::class.js) {
+        val NAME: TagName<NumberPage> = TagName("hutool-number-page")
+
+        fun define() {
+            defineIfMissing(NAME, this)
+        }
+    }
+}
+
+/** Creates a defined `<hutool-number-page>`. */
+internal fun newNumberPage(): NumberPage {
+    NumberPage.define()
+    return NumberPage.NAME()
+}
+

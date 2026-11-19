@@ -1,5 +1,9 @@
 package io.github.shijianjs.kmphutool.demo.page.encoding
 
+import io.github.shijianjs.ktjs.dom.element.invoke
+import io.github.shijianjs.ktjs.dom.webcomponent.defineIfMissing
+import web.components.CustomElementReference
+import web.dom.TagName
 import io.github.shijianjs.kmphutool.core.codec.Base64
 import io.github.shijianjs.kmphutool.core.comparator.VersionComparator
 import io.github.shijianjs.kmphutool.core.lang.Dict
@@ -10,7 +14,6 @@ import io.github.shijianjs.kmphutool.demo.page.ResultRow
 import io.github.shijianjs.kmphutool.demo.page.ResultSection
 import io.github.shijianjs.kmphutool.demo.page.ResultTexts
 import io.github.shijianjs.kmphutool.demo.page.resultTexts
-import io.github.shijianjs.ktjs.demo.nav.Page
 
 /** One dictionary, so both getStr and getInt read the same object. */
 private val dict: Dict = Dict.of("name" to "Ada", "age" to 36)
@@ -58,4 +61,23 @@ private val chinese: ResultTexts = ResultTexts(
 private val encodingTexts = resultTexts(english, chinese)
 
 /** Every string this page shows, and the calls behind them. */
-internal class EncodingPage : Page by ResultPage(encodingTexts)
+internal class EncodingPage : ResultPage() {
+    init {
+        render(encodingTexts)
+    }
+
+    companion object : CustomElementReference<EncodingPage>(EncodingPage::class.js) {
+        val NAME: TagName<EncodingPage> = TagName("hutool-encoding-page")
+
+        fun define() {
+            defineIfMissing(NAME, this)
+        }
+    }
+}
+
+/** Creates a defined `<hutool-encoding-page>`. */
+internal fun newEncodingPage(): EncodingPage {
+    EncodingPage.define()
+    return EncodingPage.NAME()
+}
+

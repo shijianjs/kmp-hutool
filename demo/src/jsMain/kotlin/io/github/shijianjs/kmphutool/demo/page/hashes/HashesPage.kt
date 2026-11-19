@@ -1,5 +1,9 @@
 package io.github.shijianjs.kmphutool.demo.page.hashes
 
+import io.github.shijianjs.ktjs.dom.element.invoke
+import io.github.shijianjs.ktjs.dom.webcomponent.defineIfMissing
+import web.components.CustomElementReference
+import web.dom.TagName
 import io.github.shijianjs.kmphutool.core.crypto.SignUtil
 import io.github.shijianjs.kmphutool.core.crypto.digest.SM3
 import io.github.shijianjs.kmphutool.core.crypto.digest.otp.HOTP
@@ -12,7 +16,6 @@ import io.github.shijianjs.kmphutool.demo.page.ResultRow
 import io.github.shijianjs.kmphutool.demo.page.ResultSection
 import io.github.shijianjs.kmphutool.demo.page.ResultTexts
 import io.github.shijianjs.kmphutool.demo.page.resultTexts
-import io.github.shijianjs.ktjs.demo.nav.Page
 
 /** One filter, so the three bloom rows describe the same object. */
 private val filter: BitMapBloomFilter = BitMapBloomFilter(5)
@@ -100,4 +103,23 @@ private val chinese: ResultTexts = ResultTexts(
 private val hashesTexts = resultTexts(english, chinese)
 
 /** Every string this page shows, and the calls behind them. */
-internal class HashesPage : Page by ResultPage(hashesTexts)
+internal class HashesPage : ResultPage() {
+    init {
+        render(hashesTexts)
+    }
+
+    companion object : CustomElementReference<HashesPage>(HashesPage::class.js) {
+        val NAME: TagName<HashesPage> = TagName("hutool-hashes-page")
+
+        fun define() {
+            defineIfMissing(NAME, this)
+        }
+    }
+}
+
+/** Creates a defined `<hutool-hashes-page>`. */
+internal fun newHashesPage(): HashesPage {
+    HashesPage.define()
+    return HashesPage.NAME()
+}
+
