@@ -52,7 +52,7 @@ internal open class ResultPage : DemoPage() {
         val english = translations[Langs.EN]
         english.sections.forEachIndexed { index, section ->
             val block = sectionBlock(section.title, section.hint)
-            binder.bind(block.title) { it.sections[index].title }
+            binder.bind(block.heading) { it.sections[index].title }
             binder.bind(block.hint) { it.sections[index].hint }
             // One card per call, laid out by the grid: a call and its value are two lines of the same
             // box, so the eye reads pairs instead of two columns that happen to line up.
