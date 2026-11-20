@@ -18,13 +18,6 @@ import io.github.shijianjs.ktjs.dom.element.invoke
  * Neither side is translated — a call reads the same in every language, and a value derived from it
  * (a hash, a formatted number) is data, not copy.
  */
-class ResultRow(val call: String, val value: String)
-
-/** One family of calls, under the heading the section shows. */
-class ResultSection(val title: String, val hint: String, val rows: List<ResultRow>)
-
-/** Everything a results page shows, in one language. */
-class ResultTexts(val title: String, val summary: String, val sections: List<ResultSection>)
 
 /**
  * Base class of the pages that are nothing but computed results.
