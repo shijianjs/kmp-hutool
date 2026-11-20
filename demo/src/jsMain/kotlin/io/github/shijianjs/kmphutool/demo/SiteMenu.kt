@@ -1,16 +1,17 @@
 package io.github.shijianjs.kmphutool.demo
 
-import io.github.shijianjs.kmphutool.demo.page.china.newChinaPage
-import io.github.shijianjs.kmphutool.demo.page.collection.newCollectionPage
-import io.github.shijianjs.kmphutool.demo.page.dates.newDatesPage
-import io.github.shijianjs.kmphutool.demo.page.encoding.newEncodingPage
-import io.github.shijianjs.kmphutool.demo.page.hashes.newHashesPage
-import io.github.shijianjs.kmphutool.demo.page.number.newNumberPage
-import io.github.shijianjs.kmphutool.demo.page.overview.newOverviewPage
-import io.github.shijianjs.kmphutool.demo.page.text.newTextPage
+import io.github.shijianjs.kmphutool.demo.page.china.ChinaPage
+import io.github.shijianjs.kmphutool.demo.page.collection.CollectionPage
+import io.github.shijianjs.kmphutool.demo.page.dates.DatesPage
+import io.github.shijianjs.kmphutool.demo.page.encoding.EncodingPage
+import io.github.shijianjs.kmphutool.demo.page.hashes.HashesPage
+import io.github.shijianjs.kmphutool.demo.page.number.NumberPage
+import io.github.shijianjs.kmphutool.demo.page.overview.OverviewPage
+import io.github.shijianjs.kmphutool.demo.page.text.TextPage
 import io.github.shijianjs.ktjs.demo.nav.DemoMenu
 import io.github.shijianjs.ktjs.demo.nav.Entry
 import io.github.shijianjs.ktjs.demo.nav.Group
+import io.github.shijianjs.ktjs.dom.element.invoke
 
 /** The upstream Hutool release this port follows; the navbar shows it under the site name. */
 const val SITE_VERSION: String = "5.8.48"
@@ -41,13 +42,13 @@ internal val CRYPTO: Group = Group("crypto", "lucide:shield-check")
  */
 fun siteMenu(): DemoMenu = DemoMenu(
     listOf(
-        Entry("overview", START) { newOverviewPage() },
-        Entry("text", TEXT) { newTextPage() },
-        Entry("number", TEXT) { newNumberPage() },
-        Entry("collection", TEXT) { newCollectionPage() },
-        Entry("encoding", DATA) { newEncodingPage() },
-        Entry("dates", DATA) { newDatesPage() },
-        Entry("china", CHINA) { newChinaPage() },
-        Entry("hashes", CRYPTO) { newHashesPage() },
+        Entry("overview", START) { OverviewPage.NAME() },
+        Entry("text", TEXT) { TextPage.NAME() },
+        Entry("number", TEXT) { NumberPage.NAME() },
+        Entry("collection", TEXT) { CollectionPage.NAME() },
+        Entry("encoding", DATA) { EncodingPage.NAME() },
+        Entry("dates", DATA) { DatesPage.NAME() },
+        Entry("china", CHINA) { ChinaPage.NAME() },
+        Entry("hashes", CRYPTO) { HashesPage.NAME() },
     ),
 )

@@ -1,9 +1,7 @@
 package io.github.shijianjs.kmphutool.demo.page.encoding
 
 import io.github.shijianjs.ktjs.dom.element.invoke
-import io.github.shijianjs.ktjs.dom.webcomponent.defineIfMissing
-import web.components.CustomElementReference
-import web.dom.TagName
+import io.github.shijianjs.ktjs.dom.webcomponent.CustomElementReferenceAdapter
 import io.github.shijianjs.kmphutool.core.codec.Base64
 import io.github.shijianjs.kmphutool.core.comparator.VersionComparator
 import io.github.shijianjs.kmphutool.core.lang.Dict
@@ -66,18 +64,6 @@ internal class EncodingPage : ResultPage() {
         render(encodingTexts)
     }
 
-    companion object : CustomElementReference<EncodingPage>(EncodingPage::class.js) {
-        val NAME: TagName<EncodingPage> = TagName("hutool-encoding-page")
-
-        fun define() {
-            defineIfMissing(NAME, this)
-        }
-    }
-}
-
-/** Creates a defined `<hutool-encoding-page>`. */
-internal fun newEncodingPage(): EncodingPage {
-    EncodingPage.define()
-    return EncodingPage.NAME()
+    companion object : CustomElementReferenceAdapter<EncodingPage>(EncodingPage::class.js, "hutool-encoding-page")
 }
 

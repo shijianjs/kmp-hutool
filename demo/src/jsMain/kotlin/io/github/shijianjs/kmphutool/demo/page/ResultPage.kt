@@ -5,11 +5,12 @@ import io.github.shijianjs.ktjs.demo.i18n.Lang
 import io.github.shijianjs.ktjs.demo.i18n.Langs
 import io.github.shijianjs.ktjs.demo.i18n.Translations
 import io.github.shijianjs.ktjs.demo.page.DemoPage
-import io.github.shijianjs.ktjs.demo.page.codeText
-import io.github.shijianjs.ktjs.demo.page.exampleBox
-import io.github.shijianjs.ktjs.demo.page.grid
-import io.github.shijianjs.ktjs.demo.page.paragraph
-import io.github.shijianjs.ktjs.demo.page.sectionBlock
+import io.github.shijianjs.ktjs.demo.page.Blocks.codeText
+import io.github.shijianjs.ktjs.demo.page.Blocks.exampleBox
+import io.github.shijianjs.ktjs.demo.page.Blocks.paragraph
+import io.github.shijianjs.ktjs.demo.page.Grid
+import io.github.shijianjs.ktjs.demo.page.SectionBlock
+import io.github.shijianjs.ktjs.dom.element.invoke
 
 /**
  * One call and its result: the expression on the left, what kmp-hutool-core returned on the right.
@@ -51,7 +52,7 @@ internal open class ResultPage : DemoPage() {
 
         val english = translations[Langs.EN]
         english.sections.forEachIndexed { index, section ->
-            val block = sectionBlock(section.title, section.hint)
+            val block = SectionBlock.NAME { show(section.title, section.hint) }
             binder.bind(block.heading) { it.sections[index].title }
             binder.bind(block.hint) { it.sections[index].hint }
             // One card per call, laid out by the grid: a call and its value are two lines of the same
@@ -59,7 +60,7 @@ internal open class ResultPage : DemoPage() {
             val cards = section.rows.map { entry ->
                 exampleBox(null, codeText(entry.call), paragraph(entry.value))
             }
-            block.body.append(grid(minColumnWidth = 240, *cards.toTypedArray()))
+            block.body.append(Grid.NAME { show(240); add(*cards.toTypedArray()) })
             body.append(block.root)
         }
 

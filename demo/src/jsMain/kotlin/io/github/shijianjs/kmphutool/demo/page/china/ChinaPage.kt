@@ -1,9 +1,7 @@
 package io.github.shijianjs.kmphutool.demo.page.china
 
 import io.github.shijianjs.ktjs.dom.element.invoke
-import io.github.shijianjs.ktjs.dom.webcomponent.defineIfMissing
-import web.components.CustomElementReference
-import web.dom.TagName
+import io.github.shijianjs.ktjs.dom.webcomponent.CustomElementReferenceAdapter
 import io.github.shijianjs.kmphutool.core.util.CreditCodeUtil
 import io.github.shijianjs.kmphutool.core.util.DesensitizedUtil
 import io.github.shijianjs.kmphutool.core.util.IdcardUtil
@@ -62,18 +60,6 @@ internal class ChinaPage : ResultPage() {
         render(chinaTexts)
     }
 
-    companion object : CustomElementReference<ChinaPage>(ChinaPage::class.js) {
-        val NAME: TagName<ChinaPage> = TagName("hutool-china-page")
-
-        fun define() {
-            defineIfMissing(NAME, this)
-        }
-    }
-}
-
-/** Creates a defined `<hutool-china-page>`. */
-internal fun newChinaPage(): ChinaPage {
-    ChinaPage.define()
-    return ChinaPage.NAME()
+    companion object : CustomElementReferenceAdapter<ChinaPage>(ChinaPage::class.js, "hutool-china-page")
 }
 

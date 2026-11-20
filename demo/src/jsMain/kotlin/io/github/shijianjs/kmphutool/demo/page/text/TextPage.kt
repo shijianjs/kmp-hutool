@@ -1,9 +1,7 @@
 package io.github.shijianjs.kmphutool.demo.page.text
 
 import io.github.shijianjs.ktjs.dom.element.invoke
-import io.github.shijianjs.ktjs.dom.webcomponent.defineIfMissing
-import web.components.CustomElementReference
-import web.dom.TagName
+import io.github.shijianjs.ktjs.dom.webcomponent.CustomElementReferenceAdapter
 import io.github.shijianjs.kmphutool.core.text.StrFormatter
 import io.github.shijianjs.kmphutool.core.util.ReUtil
 import io.github.shijianjs.kmphutool.core.util.StrUtil
@@ -55,18 +53,6 @@ internal class TextPage : ResultPage() {
         render(textTexts)
     }
 
-    companion object : CustomElementReference<TextPage>(TextPage::class.js) {
-        val NAME: TagName<TextPage> = TagName("hutool-text-page")
-
-        fun define() {
-            defineIfMissing(NAME, this)
-        }
-    }
-}
-
-/** Creates a defined `<hutool-text-page>`. */
-internal fun newTextPage(): TextPage {
-    TextPage.define()
-    return TextPage.NAME()
+    companion object : CustomElementReferenceAdapter<TextPage>(TextPage::class.js, "hutool-text-page")
 }
 

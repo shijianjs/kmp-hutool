@@ -1,9 +1,7 @@
 package io.github.shijianjs.kmphutool.demo.page.collection
 
 import io.github.shijianjs.ktjs.dom.element.invoke
-import io.github.shijianjs.ktjs.dom.webcomponent.defineIfMissing
-import web.components.CustomElementReference
-import web.dom.TagName
+import io.github.shijianjs.ktjs.dom.webcomponent.CustomElementReferenceAdapter
 import io.github.shijianjs.kmphutool.core.collection.CollUtil
 import io.github.shijianjs.kmphutool.demo.page.ResultPage
 import io.github.shijianjs.kmphutool.demo.page.ResultRow
@@ -56,18 +54,6 @@ internal class CollectionPage : ResultPage() {
         render(collectionTexts)
     }
 
-    companion object : CustomElementReference<CollectionPage>(CollectionPage::class.js) {
-        val NAME: TagName<CollectionPage> = TagName("hutool-collection-page")
-
-        fun define() {
-            defineIfMissing(NAME, this)
-        }
-    }
-}
-
-/** Creates a defined `<hutool-collection-page>`. */
-internal fun newCollectionPage(): CollectionPage {
-    CollectionPage.define()
-    return CollectionPage.NAME()
+    companion object : CustomElementReferenceAdapter<CollectionPage>(CollectionPage::class.js, "hutool-collection-page")
 }
 

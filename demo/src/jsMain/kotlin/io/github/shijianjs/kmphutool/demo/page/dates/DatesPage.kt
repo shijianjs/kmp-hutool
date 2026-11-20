@@ -1,9 +1,7 @@
 package io.github.shijianjs.kmphutool.demo.page.dates
 
 import io.github.shijianjs.ktjs.dom.element.invoke
-import io.github.shijianjs.ktjs.dom.webcomponent.defineIfMissing
-import web.components.CustomElementReference
-import web.dom.TagName
+import io.github.shijianjs.ktjs.dom.webcomponent.CustomElementReferenceAdapter
 import io.github.shijianjs.kmphutool.core.convert.NumberChineseFormatter
 import io.github.shijianjs.kmphutool.core.date.BetweenFormatter
 import io.github.shijianjs.kmphutool.core.date.ChineseDate
@@ -64,18 +62,6 @@ internal class DatesPage : ResultPage() {
         render(datesTexts)
     }
 
-    companion object : CustomElementReference<DatesPage>(DatesPage::class.js) {
-        val NAME: TagName<DatesPage> = TagName("hutool-dates-page")
-
-        fun define() {
-            defineIfMissing(NAME, this)
-        }
-    }
-}
-
-/** Creates a defined `<hutool-dates-page>`. */
-internal fun newDatesPage(): DatesPage {
-    DatesPage.define()
-    return DatesPage.NAME()
+    companion object : CustomElementReferenceAdapter<DatesPage>(DatesPage::class.js, "hutool-dates-page")
 }
 

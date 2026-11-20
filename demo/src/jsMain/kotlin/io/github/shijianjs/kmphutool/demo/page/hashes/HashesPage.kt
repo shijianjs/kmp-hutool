@@ -1,9 +1,7 @@
 package io.github.shijianjs.kmphutool.demo.page.hashes
 
 import io.github.shijianjs.ktjs.dom.element.invoke
-import io.github.shijianjs.ktjs.dom.webcomponent.defineIfMissing
-import web.components.CustomElementReference
-import web.dom.TagName
+import io.github.shijianjs.ktjs.dom.webcomponent.CustomElementReferenceAdapter
 import io.github.shijianjs.kmphutool.core.crypto.SignUtil
 import io.github.shijianjs.kmphutool.core.crypto.digest.SM3
 import io.github.shijianjs.kmphutool.core.crypto.digest.otp.HOTP
@@ -108,18 +106,6 @@ internal class HashesPage : ResultPage() {
         render(hashesTexts)
     }
 
-    companion object : CustomElementReference<HashesPage>(HashesPage::class.js) {
-        val NAME: TagName<HashesPage> = TagName("hutool-hashes-page")
-
-        fun define() {
-            defineIfMissing(NAME, this)
-        }
-    }
-}
-
-/** Creates a defined `<hutool-hashes-page>`. */
-internal fun newHashesPage(): HashesPage {
-    HashesPage.define()
-    return HashesPage.NAME()
+    companion object : CustomElementReferenceAdapter<HashesPage>(HashesPage::class.js, "hutool-hashes-page")
 }
 

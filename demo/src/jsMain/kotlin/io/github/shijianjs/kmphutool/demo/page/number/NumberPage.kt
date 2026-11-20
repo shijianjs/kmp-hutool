@@ -1,9 +1,7 @@
 package io.github.shijianjs.kmphutool.demo.page.number
 
 import io.github.shijianjs.ktjs.dom.element.invoke
-import io.github.shijianjs.ktjs.dom.webcomponent.defineIfMissing
-import web.components.CustomElementReference
-import web.dom.TagName
+import io.github.shijianjs.ktjs.dom.webcomponent.CustomElementReferenceAdapter
 import io.github.shijianjs.kmphutool.core.util.NumberUtil
 import io.github.shijianjs.kmphutool.demo.page.ResultPage
 import io.github.shijianjs.kmphutool.demo.page.ResultRow
@@ -54,18 +52,6 @@ internal class NumberPage : ResultPage() {
         render(numberTexts)
     }
 
-    companion object : CustomElementReference<NumberPage>(NumberPage::class.js) {
-        val NAME: TagName<NumberPage> = TagName("hutool-number-page")
-
-        fun define() {
-            defineIfMissing(NAME, this)
-        }
-    }
-}
-
-/** Creates a defined `<hutool-number-page>`. */
-internal fun newNumberPage(): NumberPage {
-    NumberPage.define()
-    return NumberPage.NAME()
+    companion object : CustomElementReferenceAdapter<NumberPage>(NumberPage::class.js, "hutool-number-page")
 }
 
