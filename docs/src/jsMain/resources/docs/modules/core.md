@@ -8,6 +8,17 @@ title: core
 The only published module. Everything below lives in `commonMain`, so it compiles for `jvm`, `js` and
 `wasmJs` and is tested on JVM and Node.js.
 
+```mermaid
+flowchart LR
+    CORE["kmp-hutool-core, the only published module"] --> TXT["core.text / core.util<br/>StrUtil, StrFormatter, NumberUtil, IdUtil"]
+    CORE --> COL["core.collection / core.map / core.setting"]
+    CORE --> DATE["core.date + date.chinese<br/>kotlinx-datetime values, no DateUtil class"]
+    CORE --> DATA["core.json / core.jwt / core.convert"]
+    CORE --> CACHE["core.cache / core.cron / core.bloomfilter"]
+    CORE --> CRYPTO["core.crypto: SM3, HOTP, TOTP, CityHash"]
+    CORE --> NO["not portable: java.io, threads, BigDecimal,<br/>reflection, AWT"]
+```
+
 ## Implemented so far
 
 | Package | Classes |

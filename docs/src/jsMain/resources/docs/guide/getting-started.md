@@ -29,6 +29,18 @@ kotlin {
 The version constant lives in `gradle.properties` as `kmp-hutool.version`. A `-kt.N` suffix marks the
 N-th Kotlin rewrite of upstream `5.8.48`; a new upstream version starts a new `5.8.x-kt.1`.
 
+```mermaid
+flowchart LR
+    DEP["implementation(io.github.shijianjs:kmp-hutool-core)"] --> SRC["core.* over commonMain"]
+    SRC --> JVM["jvm: jvmTest"]
+    SRC --> JS["js (IR): jsTest on Node"]
+    SRC --> WASM["wasmJs: wasmJsTest on Node"]
+    SRC --> NAT["native klibs, one per host family<br/>each runner tests its own family"]
+    JVM --> SITE["pagesSite: docs at /, demo at /demo/, Dokka at /api/"]
+    JS --> SITE
+    WASM --> SITE
+```
+
 ## First calls
 
 Everything lives under `io.github.shijianjs.kmphutool`, mirroring Hutool's package layout

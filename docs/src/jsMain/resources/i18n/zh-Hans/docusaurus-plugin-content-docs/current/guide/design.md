@@ -7,6 +7,16 @@ title: 设计
 
 移植遵循三条原则：保留 Hutool 的行为、Kotlin 更自然的地方改用 Kotlin、`commonMain` 绝不夹带 Java 依赖。
 
+```mermaid
+flowchart LR
+    UP["上游 Hutool：1557 个 Java 源文件"] --> Q{"能进 commonMain 吗？"}
+    Q -- 不能 --> EX["scripts/hutool-exclusions.json<br/>整模块或单类，附理由"]
+    Q -- 能 --> MERGE["合并门面：StrUtil + CharSequenceUtil、<br/>CollUtil + CollectionUtil、IdUtil + Snowflake"]
+    MERGE --> KOT["Kotlin 写法：String 结果、vararg、<br/>data class、inline reified"]
+    KOT --> PKG["core.* 包，镜像上游包树"]
+    PKG --> COV["@hutool fqcn 标签：覆盖率脚本按它计数"]
+```
+
 ## 合并门面
 
 Hutool 有些工具被拆成两个类，比如 `StrUtil` 与 `CharSequenceUtil`、`CollUtil` 与 `CollectionUtil`。Kotlin 的 object 加重载没有额外成本，于是直接合并：

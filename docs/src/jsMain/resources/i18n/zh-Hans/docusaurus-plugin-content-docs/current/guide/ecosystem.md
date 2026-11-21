@@ -12,6 +12,26 @@ sidebar_label: 生态
 （`hutool-io`、`hutool-json`、`hutool-http` 等）在 Kotlin 生态里都已有成熟的多平台库，
 在 `commonMain` 里再实现一遍等于维护一个更差的第二版本。
 
+```mermaid
+flowchart LR
+    subgraph hut["上游 Hutool"]
+        H1["core 的日期部分"]
+        H2["hutool-io"]
+        H3["hutool-json / hutool-setting"]
+        H4["hutool-http / hutool-socket"]
+        H5["hutool-cron / hutool-thread"]
+        H6["hutool-cache"]
+        H7["hutool-poi / captcha / system"]
+    end
+    H1 --> L1["kotlinx-datetime<br/>唯一必需的依赖"]
+    H2 --> L2["kotlinx-io"]
+    H3 --> L3["kotlinx-serialization"]
+    H4 --> L4["Ktor client"]
+    H5 --> L5["kotlinx-coroutines"]
+    H6 --> L6["kotlinx-atomicfu"]
+    H7 --> X["排除：java.awt / POI / JMX"]
+```
+
 ## 对应关系
 
 | Hutool 模块 / 能力 | 推荐 KMP 库 | 性质 | 说明 |

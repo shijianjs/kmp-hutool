@@ -14,6 +14,26 @@ Hutool implements itself (`hutool-io`, `hutool-json`, `hutool-http`, …) are al
 multiplatform libraries in the Kotlin ecosystem, and duplicating them inside a `commonMain` port would
 mean maintaining a second, worse version.
 
+```mermaid
+flowchart LR
+    subgraph hut["upstream Hutool"]
+        H1["core, the date part"]
+        H2["hutool-io"]
+        H3["hutool-json / hutool-setting"]
+        H4["hutool-http / hutool-socket"]
+        H5["hutool-cron / hutool-thread"]
+        H6["hutool-cache"]
+        H7["hutool-poi / captcha / system"]
+    end
+    H1 --> L1["kotlinx-datetime<br/>the only required dependency"]
+    H2 --> L2["kotlinx-io"]
+    H3 --> L3["kotlinx-serialization"]
+    H4 --> L4["Ktor client"]
+    H5 --> L5["kotlinx-coroutines"]
+    H6 --> L6["kotlinx-atomicfu"]
+    H7 --> X["excluded: java.awt / POI / JMX"]
+```
+
 ## Mapping
 
 | Hutool module / feature | Recommended KMP library | Nature | Notes |

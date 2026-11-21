@@ -28,6 +28,18 @@ kotlin {
 
 版本号写在 `gradle.properties` 的 `kmp-hutool.version`。`-kt.N` 后缀表示对上游 `5.8.48` 的第 N 次 Kotlin 改写；上游换版本时重新从 `5.8.x-kt.1` 开始。
 
+```mermaid
+flowchart LR
+    DEP["implementation(io.github.shijianjs:kmp-hutool-core)"] --> SRC["commonMain 里的 core.*"]
+    SRC --> JVM["jvm：jvmTest"]
+    SRC --> JS["js（IR）：jsTest 跑在 Node"]
+    SRC --> WASM["wasmJs：wasmJsTest 跑在 Node"]
+    SRC --> NAT["native klib：每个宿主家族各编一份<br/>各 runner 只测自己家族"]
+    JVM --> SITE["pagesSite：文档在 /、demo 在 /demo、Dokka 在 /api"]
+    JS --> SITE
+    WASM --> SITE
+```
+
 ## 第一个例子
 
 包结构镜像 Hutool（`core.util`、`core.text`、`core.collection`、`core.codec`……），根包是 `io.github.shijianjs.kmphutool`：

@@ -7,6 +7,17 @@ title: core
 
 本库目前唯一发布的模块。下面所有内容都在 `commonMain`，因此 JVM、JS、Wasm 都能编译，并在 JVM 与 Node.js 上跑测试。
 
+```mermaid
+flowchart LR
+    CORE["kmp-hutool-core，唯一发布的模块"] --> TXT["core.text / core.util<br/>StrUtil、StrFormatter、NumberUtil、IdUtil"]
+    CORE --> COL["core.collection / core.map / core.setting"]
+    CORE --> DATE["core.date + date.chinese<br/>kotlinx-datetime 值，没有 DateUtil 类"]
+    CORE --> DATA["core.json / core.jwt / core.convert"]
+    CORE --> CACHE["core.cache / core.cron / core.bloomfilter"]
+    CORE --> CRYPTO["core.crypto：SM3、HOTP、TOTP、CityHash"]
+    CORE --> NO["不可移植：java.io、线程、BigDecimal、<br/>反射、AWT"]
+```
+
 ## 已实现的类
 
 | 包 | 类 |

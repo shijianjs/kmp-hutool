@@ -8,6 +8,16 @@ title: Design
 The port follows three rules: keep Hutool's behaviour, use Kotlin where Kotlin is better, and never
 carry a Java dependency into `commonMain`.
 
+```mermaid
+flowchart LR
+    UP["upstream Hutool: 1557 Java source files"] --> Q{"can it live in commonMain?"}
+    Q -- no --> EX["scripts/hutool-exclusions.json<br/>whole module or one class, with the reason"]
+    Q -- yes --> MERGE["merged facades: StrUtil + CharSequenceUtil,<br/>CollUtil + CollectionUtil, IdUtil + Snowflake"]
+    MERGE --> KOT["Kotlin idioms: String results, vararg,<br/>data class, inline reified"]
+    KOT --> PKG["core.* packages mirroring the upstream tree"]
+    PKG --> COV["the @hutool fqcn tag: what the coverage script counts"]
+```
+
 ## Merged facades
 
 Hutool splits some utilities in two: `StrUtil` and `CharSequenceUtil`, `CollUtil` and
