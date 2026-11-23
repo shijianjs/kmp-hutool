@@ -34,10 +34,12 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v6
 
-      # A Dependabot PR does not carry the Gradle-generated lock file, so refresh it before building.
-      - name: Refresh npm lock file
+      # A Dependabot PR does not carry the Gradle-generated lock files, so refresh them before
+      # building. The JS store and the Wasm store are separate ones and `build` verifies each of
+      # them, so a dependency that reaches both must refresh both.
+      - name: Refresh npm lock files
         if: github.actor == 'dependabot[bot]'
-        run: ./gradlew kotlinUpgradePackageLock
+        run: ./gradlew kotlinUpgradePackageLock kotlinWasmUpgradePackageLock
 
       # `build` compiles every target (JVM, JS, Wasm, all Kotlin/Native klibs) and runs the tests this
       # host can execute: JVM, Node.js and linuxX64. Non-host native tests are disabled in the build
@@ -50,12 +52,16 @@ jobs:
       - name: Assemble Pages site
         run: ./gradlew pagesSite
 
-      - name: Upload refreshed npm lock file
+      # Both stores travel in one artifact: it is extracted into `kotlin-js-store` again, where
+      # `package-lock.json` and `wasm/package-lock.json` are the paths the checkout tracks.
+      - name: Upload refreshed npm lock files
         if: github.actor == 'dependabot[bot]'
         uses: actions/upload-artifact@v7
         with:
           name: npm-lock
-          path: kotlin-js-store/package-lock.json
+          path: |
+            kotlin-js-store/package-lock.json
+            kotlin-js-store/wasm/package-lock.json
 
       - name: Upload test reports
         if: failure()
@@ -90,11 +96,12 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v6
 
-      # A Dependabot PR carries no lock file, and the npm workspace is configured during
-      # configuration, so refresh it before the native build.
-      - name: Refresh npm lock file
+      # A Dependabot PR carries no lock files, and the npm workspaces are configured during
+      # configuration, so refresh both stores before the native build; a stale one fails the
+      # build even though this job never compiles the target that owns it.
+      - name: Refresh npm lock files
         if: github.actor == 'dependabot[bot]'
-        run: ./gradlew kotlinUpgradePackageLock
+        run: ./gradlew kotlinUpgradePackageLock kotlinWasmUpgradePackageLock
 
       # Runs every test this host can execute. The build script enables only the host's own native
       # suite, so Windows covers mingwX64 and macOS covers its arch's macOS/iOS-simulator tests.
