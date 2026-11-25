@@ -31,10 +31,9 @@ datetime = "0.8.0"
 # ktjs-docusaurus's Gradle plugin: its own `-kt.N` revision.
 ktjs-docusaurus-gradle-plugin = "3.10.2-kt.1-SNAPSHOT"
 
-# npm versions Gradle has to know about (the npm list itself is `package.json`):
-# `@docusaurus/theme-mermaid` stays on the wrapper's `@docusaurus/*` line, and the npm
-# workspace shares a single webpack.
-docusaurus = "3.10.2"
+# npm versions Gradle has to know about (the npm list itself is `package.json`): the npm workspace
+# shares a single webpack, so the root build overrides it to keep source-map-loader from installing
+# a second copy.
 webpack = "5.108.1"
 
 [libraries]
