@@ -5,9 +5,9 @@ import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin
 import org.jetbrains.kotlin.gradle.targets.js.npm.NpmExtension
 
 plugins {
-    kotlin("multiplatform") version "2.4.21" apply false
-    id("com.vanniktech.maven.publish") version "0.37.0" apply false
-    id("org.jetbrains.dokka") version "2.3.0"
+    alias(libs.plugins.kotlin.multiplatform) apply false
+    alias(libs.plugins.maven.publish) apply false
+    alias(libs.plugins.dokka)
 }
 
 // Same prefix-based discovery as the other shijianjs libraries: the name decides whether a subproject
@@ -49,8 +49,10 @@ dokka {
 // Keep a single webpack instance across the npm workspace: npm otherwise installs a second copy for
 // source-map-loader's peer dependency, and a test bundle may fail with
 // "The 'compilation' argument must be an instance of Compilation".
+val webpackVersion = libs.versions.webpack.get()
+
 plugins.withType<NodeJsRootPlugin> {
-    extensions.getByType(NpmExtension::class.java).override("webpack", "5.108.1")
+    extensions.getByType(NpmExtension::class.java).override("webpack", webpackVersion)
 }
 
 subprojects {

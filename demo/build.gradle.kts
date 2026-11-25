@@ -54,14 +54,12 @@ kotlin {
         }
 
         jsMain.dependencies {
-            implementation("org.jetbrains.kotlin-wrappers:kotlin-browser:2026.11.2")
+            implementation(libs.kotlin.browser)
             // The ported utilities the demo demonstrates.
             implementation(project(":kmp-hutool-core"))
             // The shared demo shell: layout, menu, router, i18n. Published to `mavenLocal` by a
             // working tree of the `ktjs-dom-kit` repository until the release batch.
-            implementation(
-                "io.github.shijianjs:ktjs-demo-kit-js:${providers.gradleProperty("ktjs-demo-kit.version").get()}",
-            )
+            implementation(libs.ktjs.demo.kit.js)
         }
     }
 }

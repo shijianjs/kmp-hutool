@@ -1,6 +1,6 @@
 plugins {
     kotlin("multiplatform")
-    id("io.github.shijianjs.ktjs.docusaurus")
+    alias(libs.plugins.ktjs.docusaurus)
 }
 
 /**
@@ -23,15 +23,11 @@ kotlin {
         jsMain.dependencies {
             // The wrapper brings its own `@docusaurus/*` npm dependencies: the klib records the
             // versions it was built against and Kotlin/JS installs them in the npm workspace.
-            implementation(
-                "io.github.shijianjs:ktjs-docusaurus:${providers.gradleProperty("ktjs-docusaurus.version").get()}",
-            )
+            implementation(libs.ktjs.docusaurus)
 
             // The Node-safe half of the kit: the landing page tags are markup, but `TocToggle`
             // (the desktop table of contents' collapse button) is code the client module calls.
-            implementation(
-                "io.github.shijianjs:ktjs-docusaurus-kit:${providers.gradleProperty("ktjs-docusaurus-kit.version").get()}",
-            )
+            implementation(libs.ktjs.docusaurus.kit)
         }
     }
 }
@@ -46,10 +42,7 @@ val kitBundle: Configuration by configurations.creating {
 }
 
 dependencies {
-    kitBundle(
-        "io.github.shijianjs:ktjs-docusaurus-kit-js:" +
-            "${providers.gradleProperty("ktjs-docusaurus-kit.version").get()}@klib",
-    )
+    kitBundle(libs.ktjs.docusaurus.kit.js.get().toString() + "@klib")
 }
 
 val kitBundleDir = layout.buildDirectory.dir("generated/kit-bundle/ktjs-client")
